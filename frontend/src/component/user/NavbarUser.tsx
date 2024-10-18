@@ -1,13 +1,11 @@
-import React from "react";
 import "./navbar-user.css";
-import LionLogo from "../../assets/Lion.jpg"
 import Logo from "../../assets/LogoZoo.png";
 import { Header } from "antd/es/layout/layout";
 import { ShoppingCartSimple,UserCircle } from "phosphor-react";
 
 const NavbarUser = () => {
   return (
-    <Header style={{backgroundColor:"rgb(18, 22, 21)"}}>
+    <Header style={{backgroundColor:"rgb(29, 36, 34)"}}>
       <div className="navbar-user">
         <img src={Logo} alt="" />
         <div className="about-zoo-user">About</div>
