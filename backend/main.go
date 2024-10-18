@@ -27,6 +27,7 @@ func main() {
 
 		// Animals Routes
 		router.GET("/animals", controller.ListAnimals)
+		router.POST("/animals", controller.CreateAnimal)
 		// Other Routes
 		router.GET("/genders", controller.ListGenders)
 		router.GET("/behaviorals", controller.ListBehaviorals)
