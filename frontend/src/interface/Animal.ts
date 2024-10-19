@@ -1,9 +1,11 @@
+import { GendersInterface} from "./Gender"
+
 export interface AnimalsInterface {
     ID?: number;
     Name?: string;
     Description?: string;
     BirthDay?: string;
-    GenderID?: number;
+    Gender?: GendersInterface;
     BehavioralID?: number;
     CategoryID?: number;
   }

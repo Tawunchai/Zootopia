@@ -13,7 +13,7 @@ func ListAnimals(c *gin.Context) {
 	var animals []entity.Animal
 
 	db := config.DB()
-	results := db.Preload("Gender").Find(&animals)
+	results := db.Preload("Gender").Preload("Behavioral").Preload("Category").Find(&animals)
 	if results.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
 		return

@@ -54,14 +54,23 @@ func SetupDatabase() {
 	db.FirstOrCreate(&Category3, &entity.Category{Name: "Poultry"})
 
 	BirthDay, _ := time.Parse("2006-01-02", "1988-11-12")
-	Animal := &entity.Animal{
+	Animal1 := &entity.Animal{
 		Name: "Lion",
-		Description: "The lion is a mammal in the cat family with a tawny golden coat. Male lions are known for their large, prominent manes. They inhabit savannas and forests in Africa and are apex predators.",
+		Description: "The lion is a mammal in the cat family.",
 		BirthDay:  BirthDay,
 		GenderID:  2,
 		CategoryID:  1,
 		BehavioralID:  1,
 	}
 
-	db.FirstOrCreate(Animal, &entity.Animal{Name: "Lion",})
+	Animal2 := &entity.Animal{
+		Name: "Hippo",
+		Description: "The Hippo is Bigger than is zoo",
+		GenderID:  1,
+		CategoryID:  1,
+		BehavioralID:  1,
+	}
+
+	db.FirstOrCreate(Animal1, &entity.Animal{Name: "Lion",})
+	db.FirstOrCreate(Animal2, &entity.Animal{Name: "Hippo",})
 }
