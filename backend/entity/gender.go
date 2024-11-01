@@ -2,9 +2,11 @@ package entity
 
 import "gorm.io/gorm"
 
-type Gender struct {
+type Genders struct {
 	gorm.Model
-	Name string
+	Gender string
 
 	Animals []Animal `gorm:"foreignKey:GenderID"`
+
+	Users []Users `gorm:"foreignKey:GenderID"`
 }

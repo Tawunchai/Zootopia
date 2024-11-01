@@ -28,16 +28,22 @@ func SetupDatabase() {
 
 	db.AutoMigrate(
 		&entity.Animal{},
-		&entity.Gender{},
+		&entity.Genders{},
 		&entity.Behavioral{},
 		&entity.Category{},
+		&entity.Employees{},
+		&entity.Likes{},
+		&entity.Reviews{},
+		&entity.Tasks{},
+		&entity.Users{},
+		&entity.UserRoles{},
 	)
 
-	GenderMale := entity.Gender{Name: "Male"}
-	GenderFemale := entity.Gender{Name: "Female"}
+	GenderMale := entity.Genders{Gender: "Male"}
+	GenderFemale := entity.Genders{Gender: "Female"}
 
-	db.FirstOrCreate(&GenderMale, &entity.Gender{Name: "Male"})
-	db.FirstOrCreate(&GenderFemale, &entity.Gender{Name: "Female"})
+	db.FirstOrCreate(&GenderMale, &entity.Genders{Gender: "Male"})
+	db.FirstOrCreate(&GenderFemale, &entity.Genders{Gender: "Female"})
 
 	Behavioral1 := entity.Behavioral{Behavioral: "Eat meat"}
 	Behavioral2 := entity.Behavioral{Behavioral: "Eat plants"}

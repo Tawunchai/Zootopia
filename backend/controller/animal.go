@@ -32,7 +32,7 @@ func CreateAnimal(c *gin.Context) {
 
 	db := config.DB()
 
-	var gender entity.Gender
+	var gender entity.Genders
 	db.First(&gender, animal.GenderID)
 	if gender.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "gender not found"})

@@ -6,5 +6,5 @@ type Category struct {
 	gorm.Model
 	Name string
 
-	Animals []Animal `gorm:"foreignKey:CategoryID"`
+	
 }
