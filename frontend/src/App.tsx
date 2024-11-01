@@ -1,12 +1,14 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import NavbarUser from "./component/user/NavbarUser"
-import AnimalDetails from "./page/animals/animal"
+import AnimalDetails from "./page/Zookeeper/animals/animal"
+import CreateAnimal from "./page/Zookeeper/animals/create"
+import NavbarZookeeper from './component/zookeeper/NavbarZookeeper';
 const App = () => {
   return (
     <Router>
-      <NavbarUser/>
+      <NavbarZookeeper/>
     <Routes>
       <Route path="/" element={<AnimalDetails/>} />
+      <Route path="/create" element={<CreateAnimal/>} />
     </Routes>
   </Router>
   )

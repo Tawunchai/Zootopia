@@ -1,6 +1,6 @@
 import React from 'react'
 
-const NavbarManager = () => {
+const review = () => {
   return (
     <div>
       
@@ -8,4 +8,4 @@ const NavbarManager = () => {
   )
 }
 
-export default NavbarManager
+export default review

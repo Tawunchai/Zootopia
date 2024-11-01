@@ -2,11 +2,16 @@ import { AnimalsInterface } from "../../interface/Animal";
 
 const apiUrl = "http://localhost:8000";
 
+const Authorization = localStorage.getItem("token");
+
+const Bearer = localStorage.getItem("token_type");
+
 async function GetAnimals() {
   const requestOptions = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `${Bearer} ${Authorization}`,
     },
   };
 
@@ -27,6 +32,7 @@ async function GetGenders() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `${Bearer} ${Authorization}`,
     },
   };
 
@@ -47,6 +53,7 @@ async function GetBehavioral() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `${Bearer} ${Authorization}`,
     },
   };
 
@@ -67,6 +74,7 @@ async function GetCategory() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `${Bearer} ${Authorization}`,
     },
   };
 
@@ -86,10 +94,11 @@ async function CreateAnimal(data: AnimalsInterface) {
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    Authorization: `${Bearer} ${Authorization}`,
     body: JSON.stringify(data),
   };
 
-  let res = await fetch(`${apiUrl}/users`, requestOptions)
+  let res = await fetch(`${apiUrl}/animals`, requestOptions)
     .then((res) => {
       if (res.status == 201) {
         return res.json();

@@ -10,7 +10,7 @@ type Animal struct {
 	gorm.Model
 	Name string
 	Description string
-	BirthDay  time.Time
+	BirthDay    time.Time `json:"BirthDay" time_format:"2006-01-02"`
 
 	// GenderID ทำหน้าที่เป็น FK
 	GenderID uint

@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/Tawunchai/Zootopia/config"
 	"github.com/Tawunchai/Zootopia/controller"
+	//"github.com/Tawunchai/Zootopia/middlewares"
 )
 
 const PORT = "8000"
@@ -24,7 +25,7 @@ func main() {
 
 	router := r.Group("")
 	{
-
+		//router.Use(middlewares.Authorizes())
 		// Animals Routes
 		router.GET("/animals", controller.ListAnimals)
 		router.POST("/animals", controller.CreateAnimal)

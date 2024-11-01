@@ -1,8 +1,8 @@
 import lion from "../../assets/Lion.jpg";
 import "./animal.css";
 import React, { useEffect, useState } from "react";
-import { AnimalsInterface } from "../../interface/Animal";
-import { GetAnimals } from "../../services/https";
+import { AnimalsInterface } from "../../../interface/Animal";
+import { GetAnimals } from "../../../services/https";
 
 const animal = () => {
   const [animals, setAnimals] = useState<AnimalsInterface[]>([]);
