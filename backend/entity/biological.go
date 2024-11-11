@@ -2,7 +2,7 @@ package entity
 
 import "gorm.io/gorm"
 
-type Biologicals struct {
+type Biological struct {
 	gorm.Model
 	Biological string
 

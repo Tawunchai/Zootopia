@@ -10,5 +10,5 @@ type UserRoles struct {
 	RoleName string
 	
 	// 1 Role มีได้หลาย User
-	Users []Users `gorm:"foreignKey:UserRoleID"`
+	Users []User `gorm:"foreignKey:UserRoleID"`
 }

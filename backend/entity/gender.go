@@ -6,7 +6,5 @@ type Genders struct {
 	gorm.Model
 	Gender string
 
-	Animals []Animal `gorm:"foreignKey:GenderID"`
-
-	Users []Users `gorm:"foreignKey:GenderID"`
+	Users []User `gorm:"foreignKey:GenderID"`
 }

@@ -14,6 +14,6 @@ type Tasks struct {
 	AllDay    bool        
 
 	UserID *uint
-	User   Users  `gorm:"foreignKey:UserID"`
+	User   User  `gorm:"foreignKey:UserID"`
 	
 }

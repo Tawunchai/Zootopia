@@ -6,15 +6,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type Reviews struct {
+type Review struct {
     gorm.Model
     Rating       uint
     Comment      string
     ReviewDate   time.Time
-    Picture      string `gorm:"type:longtext"`
+    Picture      string 
 
     UserID       *uint
-    User         Users `gorm:"foreignKey:UserID"`
+    User         User `gorm:"foreignKey:UserID"`
 
-    Like []Likes `gorm:"foreignKey:ReviewID"`
+    Like []Like `gorm:"foreignKey:ReviewID"`
 }

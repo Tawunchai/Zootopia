@@ -13,21 +13,29 @@ type Animal struct {
 	Weight float64
 	Height float64
 	Birthplace string
-	BirthDay    time.Time `json:"BirthDay" time_format:"2006-01-02"`
+	BirthDay    time.Time `json:"BirthDay" time_format:"2006-01-02"` // edit
 	Picture string
-	Status string
+	Health string
 	Note string
 
 	// GenderID ทำหน้าที่เป็น FK
-	GenderID uint
-	Gender   Genders `gorm:"foreignKey:GenderID"`
+	SexID uint
+	Sex   Sex `gorm:"foreignKey:SexID"`
 
-	CategoryID uint
-	Category   Category `gorm:"foreignKey:CategoryID"`
+	BiologicalID uint
+	Biological   Biological `gorm:"foreignKey:BiologicalID"`
 
 	BehavioralID uint
 	Behavioral   Behavioral `gorm:"foreignKey:BehavioralID"`
 
-	BiologicalID uint
-	Biological   Biologicals `gorm:"foreignKey:BiologicalID"`
+	EmployeeID uint
+	Employee   Employee `gorm:"foreignKey:EmployeeID"`
+
+	HabitatID uint
+	Habitat   Habitat `gorm:"foreignKey:HabitatID"`
+
+	Event []Event `gorm:"foreignKey:AnimalID"`
+
+	Report []Report `gorm:"foreignKey:AnimalID"`
+
 }

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/Tawunchai/Zootopia/config"
-	"github.com/Tawunchai/Zootopia/controller"
+	//"github.com/Tawunchai/Zootopia/controller"
 	//"github.com/Tawunchai/Zootopia/middlewares"
 )
 
@@ -23,17 +23,14 @@ func main() {
 
 	r.Use(CORSMiddleware())
 
-	router := r.Group("")
+	/*router := r.Group("")
 	{
 		//router.Use(middlewares.Authorizes())
 		// Animals Routes
-		router.GET("/animals", controller.ListAnimals)
-		router.POST("/animals", controller.CreateAnimal)
+		
 		// Other Routes
-		router.GET("/genders", controller.ListGenders)
-		router.GET("/behaviorals", controller.ListBehaviorals)
-		router.GET("/categorys", controller.ListCategorys)
-	}
+		
+	}*/
 
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "API RUNNING... PORT: %s", PORT)

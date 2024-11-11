@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Users struct {
+type User struct {
 	gorm.Model
 	Username  string	
 	Password  string	
@@ -25,10 +25,12 @@ type Users struct {
    	Gender    *Genders  `gorm:"foreignKey: GenderID"`
 
 	// 1 user สามารถมีได้ 1 TutorProfile 
-	Employees  *Employees  `gorm:"foreignKey:UserID"`
+	Employee  *Employee  `gorm:"foreignKey:UserID"`
 
 	// 1 user สามารถมีหลาย review
-	Reviews []Reviews `gorm:"foreignKey:UserID"`
+	Review []Review `gorm:"foreignKey:UserID"`
+
+	Like []Like `gorm:"foreignKey:UserID"`
 
 	// 1 user สามารถมีได้หลาย task
 	Task []Tasks `gorm:"foreignKey:UserID"`
