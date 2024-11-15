@@ -24,4 +24,6 @@ type Employee struct {
 	Work []Work `gorm:"foreignKey:EmployeeID"`
 
 	Report []Report `gorm:"foreignKey:EmployeeID"`
+
+	Calendar []Calendar `gorm:"foreignKey:EmployeeID"`
 }

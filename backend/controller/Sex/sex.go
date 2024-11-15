@@ -8,12 +8,12 @@ import (
 	"github.com/Tawunchai/Zootopia/entity"
 )
 
-func ListBehaviorals(c *gin.Context) {
-	var behaviorals []entity.Behavioral
+func ListSex(c *gin.Context) {
+	var sexs []entity.Sex
 
 	db := config.DB()
 
-	db.Find(&behaviorals)
+	db.Find(&sexs)
 
-	c.JSON(http.StatusOK, &behaviorals)
+	c.JSON(http.StatusOK, &sexs)
 }

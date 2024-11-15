@@ -1,7 +1,5 @@
-// src/components/Sidebar.tsx
-
 import { ChevronFirst, ChevronLast, MoreVertical } from "lucide-react";
-import { LayoutDashboard, Home, StickyNote, Layers, Flag, Calendar, LifeBuoy, Settings } from "lucide-react";
+import { LayoutDashboard, ClipboardPlus , Layers, BookUser , Calendar, LifeBuoy, Settings,PawPrint  } from "lucide-react";
 import logo from "../../assets/logo.png";
 import profile from "../../assets/profile.png";
 import { createContext, useContext, useState, ReactNode, FC } from "react";
@@ -38,12 +36,12 @@ const Sidebar: FC = () => {
                     </div>
 
                     <ul className="flex-1 px-3">
-                        <SidebarItem icon={<Home size={20} />} text="Home" to="/" />
-                        <SidebarItem icon={<LayoutDashboard size={20} />} text="Dashboard" to="/event" />
-                        <SidebarItem icon={<StickyNote size={20} />} text="Projects" to="/projects" />
+                        <SidebarItem icon={<PawPrint size={20} />} text="Animal" to="/" />
+                        <SidebarItem icon={<LayoutDashboard size={20} />} text="Habitat" to="/habitat" />
+                        <SidebarItem icon={<ClipboardPlus  size={20} />} text="Report" to="/report" />
                         <SidebarItem icon={<Calendar size={20} />} text="Calendar" to="/calendar" />
-                        <SidebarItem icon={<Layers size={20} />} text="Tasks" to="/tasks" />
-                        <SidebarItem icon={<Flag size={20} />} text="Reporting" to="/reporting" />
+                        <SidebarItem icon={<Layers size={20} />} text="Event" to="/event" />
+                        <SidebarItem icon={<BookUser  size={20} />} text="Work" to="/work" />
                         <hr className="my-3" />
                         <SidebarItem icon={<Settings size={20} />} text="Settings" to="/settings" />
                         <SidebarItem icon={<LifeBuoy size={20} />} text="Help" to="/help" />

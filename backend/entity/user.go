@@ -31,7 +31,4 @@ type User struct {
 	Review []Review `gorm:"foreignKey:UserID"`
 
 	Like []Like `gorm:"foreignKey:UserID"`
-
-	// 1 user สามารถมีได้หลาย task
-	Task []Tasks `gorm:"foreignKey:UserID"`
 }

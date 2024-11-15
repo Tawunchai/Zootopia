@@ -38,7 +38,7 @@ func SetupDatabase() {
 		&entity.Zone{},
 		&entity.Like{},
 		&entity.Review{},
-		&entity.Tasks{},
+		&entity.Calendar{},
 		&entity.User{},
 		&entity.Genders{},
 		&entity.UserRoles{},

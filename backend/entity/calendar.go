@@ -6,14 +6,14 @@ import (
 	"gorm.io/gorm"
 )
 
-type Tasks struct { 
+type Calendar struct { 
 	gorm.Model
     Title     string         
 	StartDate time.Time  
 	EndDate   time.Time   
 	AllDay    bool        
 
-	UserID *uint
-	User   User  `gorm:"foreignKey:UserID"`
+	EmployeeID *uint
+	Employee   Employee  `gorm:"foreignKey:EmployeeID"`
 	
 }

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/Tawunchai/Zootopia/config"
-	//"github.com/Tawunchai/Zootopia/controller"
+	"github.com/Tawunchai/Zootopia/controller/Calendar"
 	//"github.com/Tawunchai/Zootopia/middlewares"
 )
 
@@ -23,14 +23,17 @@ func main() {
 
 	r.Use(CORSMiddleware())
 
-	/*router := r.Group("")
+	router := r.Group("")
 	{
 		//router.Use(middlewares.Authorizes())
 		// Animals Routes
+
+		//Calendar Routes
+		router.GET("/calendar", calendar.ListCalendar)
+        router.POST("/create-calendar", calendar.CreateCalendar)
+        router.DELETE("/delete-calendar/:id", calendar.DeleteCalendar)
 		
-		// Other Routes
-		
-	}*/
+	}
 
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "API RUNNING... PORT: %s", PORT)

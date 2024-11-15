@@ -1,4 +1,4 @@
-package controller
+package zone
 
 import (
 	"net/http"
@@ -8,12 +8,12 @@ import (
 	"github.com/Tawunchai/Zootopia/entity"
 )
 
-func ListGenders(c *gin.Context) {
-	var genders []entity.Genders
+func ListZone(c *gin.Context) {
+	var zons []entity.Zone
 
 	db := config.DB()
 
-	db.Find(&genders)
+	db.Find(&zons)
 
-	c.JSON(http.StatusOK, &genders)
+	c.JSON(http.StatusOK, &zons)
 }
