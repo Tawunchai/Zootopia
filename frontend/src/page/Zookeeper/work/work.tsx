@@ -1,9 +1,10 @@
-import React from 'react'
+import { BookUser } from "lucide-react";
+import "./work.css";
 
 const work = () => {
   return (
     <div>
-      <h1>Work</h1>
+      <h1 className="header-work-box"><BookUser size={24} style={{marginRight:"10px"}} />Work</h1>
     </div>
   )
 }

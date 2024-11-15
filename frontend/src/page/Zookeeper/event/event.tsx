@@ -1,9 +1,10 @@
-import React from 'react'
+import { Layers } from "lucide-react";
+import "./event.css";
 
 const event = () => {
   return (
     <div>
-      <h1>Event</h1>
+      <h1 className="header-event-box"><Layers size={24} style={{marginRight:"10px"}} />Event</h1>
     </div>
   )
 }
