@@ -1,6 +1,7 @@
-.header-calendar-box{
-    color: rgb(88, 88, 88);
-    margin-left: 60px;
+/* Calendar Header */
+.header-calendar-box {
+    color: rgb(88, 88, 88); /* Text color */
+    margin-left: 20px;
     margin-top: 20px;
     font-size: 28px;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
@@ -12,4 +13,35 @@
     border-width: 2px;
     border-style: solid;
     border-color: rgb(186, 185, 185);
+}
+
+/* Full Calendar Wrapper */
+.full-calendar-wrapper {
+    height: calc(99vh - 60px); /* Adjust height to fill available space */
+    padding: 20px; /* Optional padding for styling */
+    color: rgb(88, 88, 88); /* Text color for calendar wrapper */
+}
+
+/* Full Calendar Events */
+.fc {
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    color: rgba(195, 118, 3, 0.696); /* Text color for events */
+}
+
+/* Event Titles */
+.fc-event {
+    color: white; /* Event title text color */
+    background-color: #007bff; /* Event background color */
+}
+
+/* Adjusting Hover Effect for the Calendar Header */
+.header-calendar-box:hover {
+    color: #ff5733; /* Change text color on hover */
+}
+
+/* Example: Customize Event Color */
+.fc-event:hover {
+    background-color: #0056b3; /* Darker background on hover */
+    color: #ffffff; /* Maintain white text on hover */
 }

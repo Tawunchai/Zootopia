@@ -49,7 +49,7 @@ const Sidebar: FC = () => {
                     </ul>
 
                     <div className="border-t flex p-3">
-                        <img src={profile} style={{width:"70px"}} alt="Profile" />
+                        <img src={profile} style={{width:"80px"}} alt="Profile" />
                         <div className={`flex justify-between items-center overflow-hidden transition-all ${expanded ? "w-90 ml-3" : "w-0"}`}>
                             <div className="leading-4" style={{marginRight:"15px"}}>
                                 <h4 className="font-semibold">Zookeeper</h4>

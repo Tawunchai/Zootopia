@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Tawunchai/Zootopia/entity"
 	"gorm.io/driver/sqlite"
@@ -56,5 +57,26 @@ func SetupDatabase() {
 	db.FirstOrCreate(&Behavioral1, &entity.Behavioral{Behavioral: "Eat meat"})
 	db.FirstOrCreate(&Behavioral2, &entity.Behavioral{Behavioral: "Eat plants"})
 
-	
+	Employee := uint(1)
+
+	// Creating initial Calendar events
+	initialCalendars := []entity.Calendar{
+		{
+			Title:     "Animal Feeding",
+			StartDate: time.Date(2024, 11, 20, 8, 0, 0, 0, time.UTC), // Example: 2024-11-20 08:00:00 UTC
+			AllDay:    false,
+			EmployeeID: &Employee, // Associate with employee (e.g., employee ID)
+		},
+		{
+			Title:     "Health Checkup",
+			StartDate: time.Date(2024, 11, 22, 10, 0, 0, 0, time.UTC), // Example: 2024-11-22 10:00:00 UTC
+			AllDay:    false,
+			EmployeeID: &Employee,
+		},
+	}
+
+	// Insert initial Calendar events if they don't already exist
+	for _, calendar := range initialCalendars {
+		db.FirstOrCreate(&calendar, entity.Calendar{Title: calendar.Title, StartDate: calendar.StartDate})
+	}
 }
