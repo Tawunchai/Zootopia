@@ -1,6 +1,6 @@
-ขั้นตอนการ setup Project
+ขั้นตอนการ setup Project (On Command)
 
-1.>> cd backend >> go run main.go (on command)
+1.>> cd backend >> go run main.go 
 
 2.>> cd frontend >> npm install --force >> npm run dev
 
