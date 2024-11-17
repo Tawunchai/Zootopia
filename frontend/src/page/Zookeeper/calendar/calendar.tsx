@@ -123,7 +123,7 @@ const Calendar = () => {
   return (
     <div>
       <h1 className="header-calendar-box">
-        <CalendarIcon size={24} />
+        <CalendarIcon size={28} style={{marginRight:"10px"}} />
         Calendar
       </h1>
       <div className="full-calendar-wrapper">

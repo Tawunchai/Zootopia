@@ -1,6 +1,7 @@
 /* Calendar Header */
 .header-calendar-box {
-    color: rgb(88, 88, 88); /* Text color */
+    color: rgb(255, 255, 255); /* Text color */
+    background-color: rgb(255, 183, 15);
     margin-left: 20px;
     margin-top: 20px;
     font-size: 28px;
@@ -12,7 +13,7 @@
     border-radius: 10px;
     border-width: 2px;
     border-style: solid;
-    border-color: rgb(186, 185, 185);
+    border-color: rgb(255, 183, 15);
 }
 
 /* Full Calendar Wrapper */

@@ -106,7 +106,7 @@ const Animal = () => {
     <div className="bg-slate-700 py-10 min-h-screen grid place-items-center">
       <div className="w-10/12 max-w-4xl content-container">
         <h1 className="header-animals-box">
-          <PawPrint size={24} style={{ marginRight: "10px" }} />
+          <PawPrint size={28} style={{ marginRight: "10px" }} />
           Animal
         </h1>
         <ThemeProvider theme={getMuitheme}>

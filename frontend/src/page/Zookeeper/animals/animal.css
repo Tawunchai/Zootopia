@@ -1,5 +1,6 @@
 .header-animals-box{
-    color: rgb(88, 88, 88);
+    color: rgb(255, 255, 255);
+    background-color: rgb(255, 183, 15);
     margin-left: 20px;
     margin-top: 20px;
     margin-bottom: 40px;
@@ -12,7 +13,7 @@
     border-radius: 10px;
     border-width: 2px;
     border-style: solid;
-    border-color: rgb(186, 185, 185);
+    border-color: rgb(255, 183, 15);
 }
 
 .bg-slate-700 {
