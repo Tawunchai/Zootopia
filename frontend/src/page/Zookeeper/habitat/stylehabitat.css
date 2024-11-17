@@ -1,0 +1,80 @@
+.header-habitat-box{
+    color: rgb(88, 88, 88);
+    margin-left: 60px;
+    margin-top: 20px;
+    font-size: 28px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    width: 200px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    border-radius: 10px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(186, 185, 185);
+}
+
+.header-habitatADD-box{
+    color: rgb(88, 88, 88);
+    margin-left: 60px;
+    margin-top: 40px;
+    font-size: 28px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    width: 240px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    border-radius: 10px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(186, 185, 185);
+}
+
+.header-zonehabitatA-box{
+    color: rgb(88, 88, 88);
+    margin-left: 60px;
+    margin-top: 80px;
+    font-size: 21px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    width: 90px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    border-radius: 10px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(186, 185, 185);
+}
+
+.header-zonehabitatB-box{
+    color: rgb(88, 88, 88);
+    margin-left: 60px;
+    margin-top: 180px;
+    margin-top: 170px;
+    font-size: 21px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    width: 90px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    border-radius: 10px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(186, 185, 185);
+}
+
+.header-zonehabitatC-box{
+    color: rgb(88, 88, 88);
+    margin-left: 60px;
+    margin-top: 180px;
+    font-size: 21px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    width: 90px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    border-radius: 10px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(186, 185, 185);
+}

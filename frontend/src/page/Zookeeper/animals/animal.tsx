@@ -75,7 +75,7 @@ const Animal = () => {
   const options = {
     selectableRows: "none" as SelectableRows, // Ensuring correct type for selectableRows
     filterType: "checkbox" as const,
-    rowsPerPage: 3, // Number of rows per page
+    rowsPerPage: 2, // Number of rows per page
     rowsPerPageOptions: [5, 10, 20, 30], // Options for number of rows per page
   };
 
