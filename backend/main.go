@@ -37,6 +37,7 @@ func main() {
 		//Review Routes
 		router.GET("/user-review/:id", review.GetUserByIdReviews)
 		router.GET("/reviews", review.ListReview)
+		router.POST("/reviews-create", review.CreateReview)
 	}
 
 	r.GET("/", func(c *gin.Context) {

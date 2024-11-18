@@ -91,3 +91,20 @@ export const GetUserByIdReview = async (id: number | undefined): Promise<UsersIn
     return false;
   }
 };
+
+export const CreateReview = async (formData: FormData): Promise<any | false> => {
+  try {
+    const response = await fetch(`${apiUrl}/reviews-create`, {
+      method: "POST",
+      body: formData, // Send the FormData
+    });
+
+    if (response.status !== 201) throw new Error("Invalid response from server");
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating review:", error);
+    return false;
+  }
+};
+

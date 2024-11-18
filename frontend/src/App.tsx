@@ -8,7 +8,7 @@ import Habitat from "./page/Zookeeper/habitat/habitat";
 import Work from "./page/Zookeeper/work/work";
 import Report from "./page/Zookeeper/report/report";
 import Reviews from "./page/reviews/review";
-import MyTicket from "./page/MyTicket/myticket"; // อย่าลืมเปลี่ยนชื่อ
+import MyTicket from "./page/reviews/MyTicket/myticket"; // อย่าลืมเปลี่ยนชื่อ
 
 function App() {
   return (
