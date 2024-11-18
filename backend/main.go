@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/Tawunchai/Zootopia/config"
 	"github.com/Tawunchai/Zootopia/controller/Calendar"
+	"github.com/Tawunchai/Zootopia/controller/Review"
 	//"github.com/Tawunchai/Zootopia/middlewares"
 )
 
@@ -33,6 +34,9 @@ func main() {
         router.POST("/create-calendar", calendar.CreateCalendar)
         router.DELETE("/delete-calendar/:id", calendar.DeleteCalendar)
 		
+		//Review Routes
+		router.GET("/user-review/:id", review.GetUserByIdReviews)
+		router.GET("/reviews", review.ListReview)
 	}
 
 	r.GET("/", func(c *gin.Context) {

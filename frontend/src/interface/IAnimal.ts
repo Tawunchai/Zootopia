@@ -1,4 +1,4 @@
-import { GendersInterface} from "./Gender"
+import { GendersInterface} from "./IGender"
 
 export interface AnimalsInterface {
     ID?: number;

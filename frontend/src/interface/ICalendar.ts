@@ -1,4 +1,4 @@
-export interface Calendar {
+export interface CalendarInterface {
   ID: number;              // ID ของกิจกรรม
     Title: string;           // ชื่อกิจกรรม
     StartDate: string;       // วันที่เริ่มต้น (ISO format)

@@ -15,7 +15,7 @@ import {
   createCalendar,
   deleteCalendar,
 } from "../../../services/https";
-import { Calendar as CalendarInterface } from "../../../interface/Calendar";
+import { CalendarInterface } from "../../../interface/ICalendar";
 import { useNavigate } from "react-router-dom";
 import "./calendar.css";
 

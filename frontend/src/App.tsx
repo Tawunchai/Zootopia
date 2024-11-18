@@ -7,6 +7,8 @@ import Calendar from "./page/Zookeeper/calendar/calendar";
 import Habitat from "./page/Zookeeper/habitat/habitat";
 import Work from "./page/Zookeeper/work/work";
 import Report from "./page/Zookeeper/report/report";
+import Reviews from "./page/reviews/review";
+import MyTicket from "./page/MyTicket/myticket"; // อย่าลืมเปลี่ยนชื่อ
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/report" element={<Report />} />
             <Route path="/work" element={<Work />} />
+            <Route path="/review" element={<Reviews />} />
+            <Route path="/myticket" element={<MyTicket />} />
           </Routes>
         </main>
       </div>

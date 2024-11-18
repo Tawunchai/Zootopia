@@ -44,8 +44,8 @@ const Sidebar: FC = () => {
                         <SidebarItem icon={<BookUser  size={20} />} text="Work" to="/work" />
                         <SidebarItem icon={<Beef  size={20} />} text="Stock" to="/stock" />
                         <hr className="my-3" />
-                        <SidebarItem icon={<Settings size={20} />} text="Settings" to="/settings" />
-                        <SidebarItem icon={<LifeBuoy size={20} />} text="Help" to="/help" />
+                        <SidebarItem icon={<Settings size={20} />} text="MyTicket" to="/myticket" />
+                        <SidebarItem icon={<LifeBuoy size={20} />} text="Review" to="/review" />
                     </ul>
 
                     <div className="border-t flex p-3">
