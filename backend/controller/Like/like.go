@@ -45,7 +45,6 @@ func LikeReview(c *gin.Context) {
 		return
 	}
 
-	// บันทึก error อื่น ๆ ที่เกิดขึ้นที่นี่
 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 }
 
@@ -88,7 +87,7 @@ func UnlikeReview(c *gin.Context) {
 		return
 	}
 
-	if err := db.Where("user_id = ? AND review_id = ?", input.UserID, input.ReviewID).Delete(&entity.Like{}).Error; err != nil {
+	if err := db.Unscoped().Where("user_id = ? AND review_id = ?", input.UserID, input.ReviewID).Delete(&entity.Like{}).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -98,3 +97,4 @@ func UnlikeReview(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "ยกเลิก Like รีวิวเรียบร้อย", "likeCount": likeCount})
 }
+

@@ -7,6 +7,7 @@ import (
 	"github.com/Tawunchai/Zootopia/config"
 	"github.com/Tawunchai/Zootopia/controller/Calendar"
 	"github.com/Tawunchai/Zootopia/controller/Review"
+	"github.com/Tawunchai/Zootopia/controller/Like"
 	//"github.com/Tawunchai/Zootopia/middlewares"
 )
 
@@ -38,6 +39,14 @@ func main() {
 		router.GET("/user-review/:id", review.GetUserByIdReviews)
 		router.GET("/reviews", review.ListReview)
 		router.POST("/reviews-create", review.CreateReview)
+		router.GET("/ratings", review.GetAllRatingsAvg)
+		router.GET("/reviews/filter", review.GetFilteredReviews)
+		router.GET("/reviews/search", review.SearchReviewsByKeyword)
+
+		//Like Routes
+		router.POST("/reviews/like", like.LikeReview)
+		router.DELETE("/reviews/unlike", like.UnlikeReview)
+		router.GET("/reviews/:userID/:reviewID/like", like.CheckUserLikeStatus)
 	}
 
 	r.GET("/", func(c *gin.Context) {

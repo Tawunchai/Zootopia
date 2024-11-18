@@ -108,3 +108,149 @@ export const CreateReview = async (formData: FormData): Promise<any | false> => 
   }
 };
 
+export const GetAllRatingsAvg = async (): Promise<{ rating: number; percentage: number }[] | false> => {
+  try {
+    const response = await fetch(`${apiUrl}/ratings`, {  
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) throw new Error("การตอบสนองของเครือข่ายไม่ถูกต้อง");
+    const data = await response.json();
+
+    if (!Array.isArray(data.ratings)) return false;
+
+    const ratings: number[] = data.ratings;
+    const ratingCount = ratings.length;
+
+    const ratingSummary = ratings.reduce<{ [key: number]: number }>(  // สรุปการกระจายคะแนน
+      (acc, rating) => {
+        acc[rating] = (acc[rating] || 0) + 1;
+        return acc;
+      },
+      {}
+    );
+
+    const avgRatings = Object.keys(ratingSummary).map((rating) => ({
+      rating: Number(rating),
+      percentage: (ratingSummary[Number(rating)] / ratingCount) * 100,  // คำนวณเปอร์เซ็นต์ของแต่ละคะแนน
+    }));
+
+    return avgRatings;
+  } catch (error) {
+    console.error("ข้อผิดพลาดในการดึงค่าเฉลี่ยคะแนนรีวิว:", error);
+    return false;
+  }
+};
+
+export const onLikeButtonClick = async (
+  reviewID: number,
+  userID: number
+): Promise<any | false> => {
+  try {
+    const response = await fetch(`${apiUrl}/reviews/like`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userID, review_id: reviewID }),
+    });
+
+    if (!response.ok) throw new Error("การตอบสนองของเครือข่ายไม่ถูกต้อง");
+    return await response.json();
+  } catch (error) {
+    console.error("ข้อผิดพลาดในการกดไลค์:", error);
+    return false;
+  }
+};
+
+export const fetchLikeStatus = async (
+  reviewID: number,
+  userID: number
+): Promise<{ hasLiked: boolean; likeCount: number } | false> => {
+  try {
+    const response = await fetch(
+      `${apiUrl}/reviews/${userID}/${reviewID}/like`
+    );
+    if (!response.ok) throw new Error("การตอบสนองของเครือข่ายไม่ถูกต้อง");
+    const data = await response.json();
+    return {
+      hasLiked: data.hasLiked ?? false,
+      likeCount: data.likeCount ?? 0,
+    };
+  } catch (error) {
+    console.error("ข้อผิดพลาดในการดึงสถานะไลค์:", error);
+    return false;
+  }
+};
+
+export const onUnlikeButtonClick = async (reviewID: number, userID: number) => {
+  try {
+    const response = await fetch(`${apiUrl}/reviews/unlike`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userID, review_id: reviewID }),
+    });
+
+    if (!response.ok) throw new Error("การตอบสนองของเครือข่ายไม่ถูกต้อง");
+    return await response.json();
+  } catch (error) {
+    console.error("ข้อผิดพลาดในการยกเลิกไลค์:", error);
+    return false;
+  }
+};
+
+export const GetFilteredReviews = async (
+  starLevel: string
+): Promise<ReviewInterface[] | false> => {
+  try {
+    const query = new URLSearchParams();
+    query.append("starLevel", starLevel); 
+
+    const response = await fetch(
+      `${apiUrl}/reviews/filter?${query.toString()}`, 
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.status === 204) return []; 
+    if (!response.ok) throw new Error("การตอบสนองของเครือข่ายไม่ถูกต้อง");
+
+    return await response.json(); 
+  } catch {
+    return false; 
+  }
+};
+
+
+export const SearchReviewsByKeyword = async (
+  keyword: string
+): Promise<ReviewInterface[] | false> => {
+  try {
+    const query = new URLSearchParams();
+    query.append("keyword", keyword); // ส่งแค่ keyword
+
+    const response = await fetch(
+      `${apiUrl}/reviews/search?${query.toString()}`, // ไม่ส่ง courseID
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.status === 204) return []; // ถ้าไม่มีรีวิวให้แสดง
+    if (!response.ok) throw new Error("การตอบสนองของเครือข่ายไม่ถูกต้อง");
+
+    return await response.json(); // ดึงข้อมูลรีวิว
+  } catch (error) {
+    console.error("ข้อผิดพลาดในการค้นหารีวิวตามคำสำคัญ:", error);
+    return false;
+  }
+};
+

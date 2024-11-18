@@ -11,12 +11,15 @@ import (
 
 var db *gorm.DB
 
+
 func DB() *gorm.DB {
 	return db
 }
 
 func ConnectionDB() {
-	database, err := gorm.Open(sqlite.Open("Zootopia.db?cache=shared"), &gorm.Config{})
+	database, err := gorm.Open(sqlite.Open("Zootopia.db?cache=shared"), &gorm.Config{
+	})
+
 	if err != nil {
 		panic("failed to connect database")
 	}

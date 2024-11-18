@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ReviewInterface } from "../../interface/IReview";
 import UserDefaultProfile from "../../assets/Profile-user.jpg";
 import { ListReview, GetUserByIdReview } from "../../services/https";
 import { FaStar } from "react-icons/fa";
-import { Card } from "antd";
+import Modal from "./Model/model"
+import { Card,Button } from "antd";
 import "./review.css";
 
 const Review = () => {
@@ -12,6 +13,13 @@ const Review = () => {
   const [userProfiles, setUserProfiles] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true); 
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+};
+
+const handleCancel = () => {setIsModalVisible(false);};
 
   const getReviews = async () => {
     try {
@@ -140,9 +148,10 @@ const Review = () => {
 
       <footer>
         <center className="reviews-readmore">
-          <h1>Read More Visitor Reviews</h1>
+          <Button type="link" style={{  display: 'block',textAlign: 'center',color: '#002A48',margin: '10px 0',}} onClick={showModal}>Read More Visitor Reviews</Button>
         </center>
       </footer>
+      <Modal isVisible={isModalVisible} handleCancel={handleCancel} />
     </div>
   );
 };
