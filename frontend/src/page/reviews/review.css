@@ -21,6 +21,14 @@
     border-style: solid;
     margin-left: auto;
     margin-right: auto; 
+    cursor: pointer;
+}
+.reviews-readmore:hover{
+    background-color: #a29e9e;
+    color: white;
+    border-color: rgb(255, 255, 255);
+    border-width: 2px;
+    border-style: solid;
 }
 
 .ant-modal {
@@ -131,7 +139,7 @@
 
 .star-container {
     display: flex; /* จัดเรียงเป็นแถว */
-    gap: 5px; /* ระยะห่างระหว่างดาว */
+    gap: 1px; /* ระยะห่างระหว่างดาว */
     align-items: center;
 
 }
@@ -142,3 +150,15 @@
     gap: 3px; /* ระยะห่างระหว่างแต่ละดาว */
     vertical-align: middle; /* ทำให้ดาวอยู่แนวเดียวกับข้อความ */
 }
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 20px; 
+    margin-top: 20px;
+  }
+
+  .box-course-profile{
+    margin-left: 20px;
+    margin-right: 20px;
+  }

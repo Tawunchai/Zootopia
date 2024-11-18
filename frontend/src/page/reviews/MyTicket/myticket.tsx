@@ -10,16 +10,14 @@ import { ListReview } from "../../../services/https";
 const myticket = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const [uid, setUid] = useState<number>(
-    Number(localStorage.getItem("id")) || 0
-  );
+  const [uid, setUid] = useState<number>(1); // Always set uid to 1
   const navigate = useNavigate();
   const [user, setUser] = useState<UsersInterface>();
 
+  // No need to retrieve uid from localStorage
   useEffect(() => {
-    setUid(Number(localStorage.getItem("1")));
-
-  }, [uid]);
+    // If you want to perform any logic on initial render, you can do it here
+  }, []);
 
   const openModal = async () => {
     setIsOpen(true);
@@ -28,26 +26,10 @@ const myticket = () => {
   return (
     <>
       {contextHolder}
-      <br />
-      <br />
-      <br />
-      <br />
-      <div className="header-course">MyCourse</div>
-      <div className="setcourse">
         <div className="review-layer">
-          <button className="button-open-model" onClick={() => openModal()}>
-            {" "}
-            Review Zoo{" "}
-          </button>
-          {isOpen && (
-            <Modal
-              open={isOpen}
-              onClose={() => setIsOpen(false)}
-              UserID={uid}
-            />
-          )}
+          <button className="button-open-model" onClick={() => openModal()}>Review Zoo</button>
+          {isOpen && (<Modal open={isOpen} onClose={() => setIsOpen(false)} UserID={uid} />)}
         </div>
-      </div>
     </>
   );
 };

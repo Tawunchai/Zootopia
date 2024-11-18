@@ -21,7 +21,21 @@ input[type=radio]{
     width: 200px;
     height: 60px;
     border-radius: 5px;
+}
 
+.header-reviewszoo{
+    text-align: left;
+    font-size: 24px;
+    width: 200px;
+    height: 60px;
+    border-radius: 5px;
+    background-color: rgb(255, 183, 15);
+    color: #FFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    font-family: cursive;
 }
 
 .top-product{
@@ -73,12 +87,22 @@ input[type=radio]{
 }
 
 .review-layer {
-    width: 100%;
-    height: auto;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px; /* Reduced the gap between cards */
-    place-items: center;
+    margin-left: 50px;
+    margin-top: 40px;
+    background-color: rgb(255, 183, 15);
+    width: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    font-size: 18px;
+    border-radius: 10px;
+    border-color: rgb(255, 183, 15);
+    border-style: solid;
+    border-width: 1px;
+    color: #FFF;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .product-review img {

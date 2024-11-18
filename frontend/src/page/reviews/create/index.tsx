@@ -83,7 +83,7 @@ const ModalCreate: React.FC<ModalProps> = ({
         });
         setTimeout(() => {
           onClose();
-          navigate("/myCourses");
+          navigate("/myticket");
         }, 2000);
       } else {
         messageApi.open({
@@ -107,15 +107,15 @@ const ModalCreate: React.FC<ModalProps> = ({
       <div className="overlay" />
       <div className="modal">
         <div>
-          <p className="text">Review Course</p>
+          <p className="header-reviewszoo">Review Zoo</p>
           <Form
             form={form}
             name="reviewForm"
             onFinish={onFinish}
             layout="vertical"
-          >
+          ><br />
             <Form.Item
-              label="รูปประจำตัว"
+              label="Picture"
               name="Profile"
               valuePropName="fileList"
             >

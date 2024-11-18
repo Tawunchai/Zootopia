@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { ReviewInterface } from "../../interface/IReview";
+import UserDefaultProfile from "../../assets/Profile-user.jpg";
 import { ListReview, GetUserByIdReview } from "../../services/https";
 import { FaStar } from "react-icons/fa";
 import { Card } from "antd";
 import "./review.css";
-const review = () => {
+
+const Review = () => {
   const [filteredReviews, setFilteredReviews] = useState<ReviewInterface[]>([]);
   const [userNames, setUserNames] = useState<string[]>([]);
   const [userProfiles, setUserProfiles] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true); 
 
   const getReviews = async () => {
     try {
+      setLoading(true); 
       const res = await ListReview();
       if (res) {
-        setFilteredReviews(res.slice(0, 4));
+        setFilteredReviews(res.slice(0, 6)); // Get first 4 reviews
 
         const userPromises = res.map(async (review) => {
           if (review.UserID) {
@@ -33,6 +37,8 @@ const review = () => {
     } catch (err) {
       setError("Failed to fetch reviews");
       console.error(err);
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -92,36 +98,42 @@ const review = () => {
 
       <body>
         <div className="box-course-profile">
-          {error ? (
-            <p>{error}</p>
-          ) : filteredReviews.length > 0 ? (
-            filteredReviews.map((review, index) => (
-              <Card key={review.ID}>
-                <div className="review-container">
-                  <img
-                    src={userProfiles[index] || ""}
-                    className="review-profile-img"
-                    alt="User Profile"
-                  />
-                  <div className="reviews-comment-text">
-                    <p>Name: {userNames[index] ?? "Unknown User"}</p>
-                    <p>
-                      Rating:{" "}
-                      <span className="rating-stars">
-                        {renderStarsUser(review.Rating ?? 0)}
-                      </span>
-                      <span className="date-review">
-                        {formatDate(review.ReviewDate)}
-                      </span>
-                    </p>
-                    <p>{renderComment(review.Comment)}</p>
-                  </div>
-                  <hr />
-                </div>
-              </Card>
-            ))
+          {loading ? (
+            <p>Loading reviews...</p> 
+          ) : error ? (
+            <p>{error}</p> 
           ) : (
-            <p>No Reviews Found.</p>
+            <div className="reviews-grid">
+              {filteredReviews.length > 0 ? (
+                filteredReviews.map((review, index) => (
+                  <Card key={review.ID} className="review-card">
+                    <div className="review-container">
+                      <img
+                        src={userProfiles[index] || UserDefaultProfile} 
+                        className="review-profile-img"
+                        alt="User Profile"
+                      />
+                      <div className="reviews-comment-text">
+                        <p>Name: {userNames[index] ?? "Unknown User"}</p>
+                        <p>
+                          Rating:{" "}
+                          <span className="rating-stars">
+                            {renderStarsUser(review.Rating ?? 0)}
+                          </span>
+                          <span className="date-review">
+                            {formatDate(review.ReviewDate)}
+                          </span>
+                        </p>
+                        <p>{renderComment(review.Comment)}</p>
+                      </div>
+                      <hr />
+                    </div>
+                  </Card>
+                ))
+              ) : (
+                <p>No Reviews Found.</p>
+              )}
+            </div>
           )}
         </div>
       </body>
@@ -135,4 +147,4 @@ const review = () => {
   );
 };
 
-export default review;
+export default Review;
