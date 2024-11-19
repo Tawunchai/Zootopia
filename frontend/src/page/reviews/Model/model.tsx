@@ -47,15 +47,20 @@ const Modal: React.FC<ReviewModalProps> = ({ isVisible, handleCancel }) => {
         if (Array.isArray(reviewsData)) {
           setReviews(reviewsData);
           setFilteredReviews(reviewsData);
-  
-          const ratings = reviewsData.map((review: ReviewInterface) => review.Rating ?? 0);
+
+          const ratings = reviewsData.map(
+            (review: ReviewInterface) => review.Rating ?? 0
+          );
           const average =
             ratings.length > 0
-              ? ratings.reduce((sum: number, rating: number) => sum + rating, 0) / ratings.length
+              ? ratings.reduce(
+                  (sum: number, rating: number) => sum + rating,
+                  0
+                ) / ratings.length
               : 0;
           setAverageRating(parseFloat(average.toFixed(1)));
           setTotalReviews(ratings.length);
-  
+
           const userIds = Array.from(
             new Set(
               reviewsData
@@ -63,20 +68,22 @@ const Modal: React.FC<ReviewModalProps> = ({ isVisible, handleCancel }) => {
                 .filter((id) => id !== undefined)
             )
           ) as number[];
-  
+
           const users = await Promise.all(
             userIds.map((userId) => GetUserByIdReview(userId))
           );
           const profileMap: Record<number, string> = {};
           const nameMap: Record<number, string> = {};
-  
+
           users.forEach((user) => {
             if (user) {
               profileMap[user.ID ?? 0] = user.Profile || "";
-              nameMap[user.ID ?? 0] = `${user.FirstName ?? ""} ${user.LastName ?? ""}`;
+              nameMap[user.ID ?? 0] = `${user.FirstName ?? ""} ${
+                user.LastName ?? ""
+              }`;
             }
           });
-  
+
           setUserProfiles(profileMap);
           setUserNames(nameMap);
         } else {
@@ -89,7 +96,6 @@ const Modal: React.FC<ReviewModalProps> = ({ isVisible, handleCancel }) => {
     };
     fetchData();
   }, []);
-  
 
   useEffect(() => {
     setExpandedReviewIds([]);
@@ -98,7 +104,7 @@ const Modal: React.FC<ReviewModalProps> = ({ isVisible, handleCancel }) => {
   const searchAndFilterReviews = async () => {
     try {
       let filtered: ReviewInterface[] = reviews;
-  
+
       if (searchKeyword.length > 0) {
         const result = await SearchReviewsByKeyword(searchKeyword);
         if (result && result.length > 0) {
@@ -117,7 +123,7 @@ const Modal: React.FC<ReviewModalProps> = ({ isVisible, handleCancel }) => {
           filtered = [];
         }
       }
-  
+
       if (starLevel !== "All") {
         const filteredByStars = await GetFilteredReviews(starLevel); // ตรวจสอบว่าค่าที่ส่งไปถูกต้อง
         if (filteredByStars && filteredByStars.length > 0) {
@@ -128,13 +134,12 @@ const Modal: React.FC<ReviewModalProps> = ({ isVisible, handleCancel }) => {
           filtered = [];
         }
       }
-  
+
       setFilteredReviews(filtered);
     } catch (error) {
       console.error("Error searching and filtering reviews:", error);
     }
   };
-  
 
   const formatDate = (date?: Date | string) => {
     if (!date) return "Unknown Date";
@@ -285,7 +290,17 @@ const Modal: React.FC<ReviewModalProps> = ({ isVisible, handleCancel }) => {
                 <div>{formatDate(review.ReviewDate)}</div>
               </div>
               {renderComment(review)}
-              <Like reviewID={review.ID ?? 0} userID={1}/>
+              <div>
+  <Image
+    src={`http://localhost:8000/${review.Picture}`} // แปลง path เป็น URL เต็ม
+    alt="Review Picture"
+    width={200}
+    height={150}
+    style={{ objectFit: "cover", borderRadius: "8px" }}
+  />
+</div>
+
+              <Like reviewID={review.ID ?? 0} userID={1} />
             </Card>
           </div>
         ))

@@ -26,7 +26,7 @@ const handleCancel = () => {setIsModalVisible(false);};
       setLoading(true); 
       const res = await ListReview();
       if (res) {
-        setFilteredReviews(res.slice(0, 6)); // Get first 4 reviews
+        setFilteredReviews(res.slice(0, 6)); // Get first 6 reviews
 
         const userPromises = res.map(async (review) => {
           if (review.UserID) {

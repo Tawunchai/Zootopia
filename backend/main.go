@@ -31,6 +31,7 @@ func main() {
 
 	router := r.Group("")
 	{
+		r.Static("/uploads", "./uploads") // กำหนด static route
 		//router.Use(middlewares.Authorizes())
 
 		// Animals Routes
