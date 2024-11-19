@@ -11,6 +11,7 @@ import (
 	"github.com/Tawunchai/Zootopia/controller/Event"
 	"github.com/Tawunchai/Zootopia/controller/Habitat"
 	"github.com/Tawunchai/Zootopia/controller/Animal"
+	"github.com/Tawunchai/Zootopia/controller/Report"
 	//"github.com/Tawunchai/Zootopia/middlewares"
 )
 
@@ -34,6 +35,9 @@ func main() {
 
 		// Animals Routes
 		router.POST("/animals-create", animal.CreateAnimal)
+
+		// Report Routes
+		router.POST("/reports-create", report.CreateReport)
 
 		//Calendar Routes
 		router.GET("/calendar", calendar.ListCalendar)

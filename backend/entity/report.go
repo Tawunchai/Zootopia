@@ -13,6 +13,7 @@ type Report struct {
 	ReportDate     time.Time
 	Status string
 	StatusVet string
+	Picture string
 
 	AnimalID uint
 	Animal   Animal `gorm:"foreignKey:AnimalID"`

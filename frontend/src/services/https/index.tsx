@@ -313,3 +313,24 @@ export const CreateAnimal = async (formData: FormData): Promise<any | false> => 
   }
 };
 
+//Report API
+export const CreateReport = async (formData: FormData): Promise<any | false> => {
+  try {
+    const response = await axios.post(`${apiUrl}/reports-create`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data", // Sending form data (including file)
+        Authorization: getAuthHeader(), // Authorization header with token
+      },
+    });
+
+    if (response.status !== 201) {
+      throw new Error("Failed to create report.");
+    }
+
+    return response.data; // Return the report data if successful
+  } catch (error) {
+    console.error("Error creating report:", error);
+    return false; // Return false if there is an error
+  }
+};
+

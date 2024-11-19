@@ -12,6 +12,7 @@ import MyTicket from "./page/reviews/MyTicket/myticket"; // อย่าลื�
 import CreateEvent from "./page/Zookeeper/event/create/index"; // อย่าลืมเปลี่ยนชื่อ
 import CreateHabitat from "./page/Zookeeper/habitat/create/index"; // อย่าลืมเปลี่ยนชื่อ
 import CreateAnimal from "./page/Zookeeper/animals/create/index"; // อย่าลืมเปลี่ยนชื่อ
+import CreateReport from "./page/Zookeeper/report/create/index"; // อย่าลืมเปลี่ยนชื่อ
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Route path="/create-event" element={<CreateEvent />} />
             <Route path="/create-habitat" element={<CreateHabitat />} />
             <Route path="/create-animal" element={<CreateAnimal />} />
+            <Route path="/create-report" element={<CreateReport />} />
           </Routes>
         </main>
       </div>

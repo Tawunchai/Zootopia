@@ -1,15 +1,39 @@
 package config
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"strings"
 	"time"
 
 	"github.com/Tawunchai/Zootopia/entity"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var db *gorm.DB
+
+type CustomLogger struct{}
+
+func (l *CustomLogger) LogMode(level logger.LogLevel) logger.Interface {
+	return l
+}
+
+func (l *CustomLogger) Info(ctx context.Context, msg string, args ...interface{}) {}
+
+func (l *CustomLogger) Warn(ctx context.Context, msg string, args ...interface{}) {}
+
+func (l *CustomLogger) Error(ctx context.Context, msg string, args ...interface{}) {
+	if !strings.Contains(msg, "record not found") {
+		log.Printf(msg, args...)
+	}
+}
+
+func (l *CustomLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
+	// ไม่ทำอะไรใน Trace
+}
 
 
 func DB() *gorm.DB {
@@ -18,11 +42,13 @@ func DB() *gorm.DB {
 
 func ConnectionDB() {
 	database, err := gorm.Open(sqlite.Open("Zootopia.db?cache=shared"), &gorm.Config{
+		Logger: &CustomLogger{},
 	})
 
 	if err != nil {
 		panic("failed to connect database")
 	}
+
 	fmt.Println("connected database")
 	db = database
 }
