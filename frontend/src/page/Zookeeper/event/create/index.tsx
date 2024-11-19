@@ -1,136 +1,205 @@
 import React, { useState } from "react";
-import { Form, Input, DatePicker, Upload, Button, message, InputNumber } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-import { CreateEvent } from "../../../../services/https"; // Import service function
-import moment from "moment";
+import {
+  Form,
+  Input,
+  DatePicker,
+  Button,
+  message,
+  InputNumber,
+  Upload,
+  Card,
+  Divider,
+  Row,
+  Col,
+  Space,
+} from "antd";
+import ImgCrop from "antd-img-crop";
+import { PlusOutlined } from "@ant-design/icons";
+import { CreateEvent } from "../../../../services/https";
 
 const { TextArea } = Input;
 
 const CreateEventForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [file, setFile] = useState<File | null>(null);
+  const [fileList, setFileList] = useState<any[]>([]);
 
   const onFinish = async (values: any) => {
-    const formData = new FormData();
+    if (fileList.length === 0) {
+      message.error("Please upload a picture");
+      return;
+    }
 
-    // Append all form fields to FormData
+    const formData = new FormData();
     formData.append("title", values.title);
     formData.append("description", values.description);
     formData.append("startDate", values.startDate.format("YYYY-MM-DD"));
     formData.append("endDate", values.endDate.format("YYYY-MM-DD"));
     formData.append("zoneID", values.zoneID);
     formData.append("animalID", values.animalID);
-    formData.append("employeeID", values.employeeID);
+    formData.append("employeeID", "1"); // Set EmployeeID to 1
+    formData.append("picture", fileList[0].originFileObj);
 
-    if (file) {
-      formData.append("picture", file);
-    } else {
-      message.error("Please upload a picture");
-      return;
-    }
-
-    // Call API to create event
     const response = await CreateEvent(formData);
 
     if (response) {
       message.success("Event created successfully!");
       form.resetFields();
-      setFile(null);
+      setFileList([]);
     } else {
       message.error("Failed to create event.");
     }
   };
 
-  const handleFileChange = (info: any) => {
-    const fileList = info.fileList;
-    if (fileList.length > 0) {
-      setFile(fileList[0].originFileObj);
-    } else {
-      setFile(null);
+  const onChange = ({ fileList: newFileList }: any) => {
+    setFileList(newFileList);
+  };
+
+  const onPreview = async (file: any) => {
+    let src = file.url;
+    if (!src) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj);
+        reader.onload = () => resolve(reader.result as string);
+      });
     }
+    const imgWindow = window.open(src);
+    imgWindow?.document.write(`<img src="${src}" style="max-width: 100%;" />`);
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "auto", marginTop: "50px" }}>
+    <Card>
       <h2>Create Event</h2>
-      <Form form={form} layout="vertical" onFinish={onFinish}>
-      <Form.Item
-          label="Upload Picture"
-          name="picture"
-          rules={[{ required: true, message: "Please upload a picture" }]}
-        >
-          <Upload
-            beforeUpload={() => false}
-            maxCount={1}
-            onChange={handleFileChange}
-          >
-            <Button icon={<UploadOutlined />}>Click to Upload</Button>
-          </Upload>
-        </Form.Item>
-        
-        <Form.Item
-          label="Title"
-          name="title"
-          rules={[{ required: true, message: "Please enter the title" }]}
-        >
-          <Input placeholder="Enter event title" />
-        </Form.Item>
-
-        <Form.Item
-          label="Description"
-          name="description"
-          rules={[{ required: true, message: "Please enter the description" }]}
-        >
-          <TextArea rows={4} placeholder="Enter event description" />
-        </Form.Item>
-
-        <Form.Item
-          label="Start Date"
-          name="startDate"
-          rules={[{ required: true, message: "Please select the start date" }]}
-        >
-          <DatePicker style={{ width: "100%" }} />
-        </Form.Item>
-
-        <Form.Item
-          label="End Date"
-          name="endDate"
-          rules={[{ required: true, message: "Please select the end date" }]}
-        >
-          <DatePicker style={{ width: "100%" }} />
-        </Form.Item>
-
-        <Form.Item
-          label="Zone ID"
-          name="zoneID"
-          rules={[{ required: true, message: "Please enter Zone ID" }]}
-        >
-          <InputNumber style={{ width: "100%" }} placeholder="Enter Zone ID" />
-        </Form.Item>
-
-        <Form.Item
-          label="Animal ID"
-          name="animalID"
-          rules={[{ required: true, message: "Please enter Animal ID" }]}
-        >
-          <InputNumber style={{ width: "100%" }} placeholder="Enter Animal ID" />
-        </Form.Item>
-
-        <Form.Item
-          label="Employee ID"
-          name="employeeID"
-          rules={[{ required: true, message: "Please enter Employee ID" }]}
-        >
-          <InputNumber style={{ width: "100%" }} placeholder="Enter Employee ID" />
-        </Form.Item>
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Create Event
-          </Button>
-        </Form.Item>
+      <Divider />
+      <Form
+        form={form}
+        name="basic"
+        layout="vertical"
+        autoComplete="off"
+        onFinish={onFinish}
+      >
+        <Row gutter={[16, 16]}>
+          <Col span={24}>
+            <Form.Item
+              label="Upload Picture"
+              name="picture"
+              rules={[
+                {
+                  required: true,
+                  message: "Please upload a picture",
+                  validator: () => {
+                    return fileList.length > 0
+                      ? Promise.resolve()
+                      : Promise.reject(new Error("Please upload a picture"));
+                  },
+                },
+              ]}
+            >
+              <ImgCrop rotationSlider>
+                <Upload
+                  fileList={fileList}
+                  onChange={onChange}
+                  onPreview={onPreview}
+                  beforeUpload={(file) => {
+                    setFileList([file]);
+                    return false; // Prevent automatic upload
+                  }}
+                  maxCount={1}
+                  listType="picture-card"
+                >
+                  {fileList.length < 1 && (
+                    <div>
+                      <PlusOutlined />
+                      <div style={{ marginTop: 8 }}>Upload</div>
+                    </div>
+                  )}
+                </Upload>
+              </ImgCrop>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Title"
+              name="title"
+              rules={[{ required: true, message: "Please enter the title" }]}
+            >
+              <Input placeholder="Enter event title" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[
+                { required: true, message: "Please enter the description" },
+              ]}
+            >
+              <TextArea rows={4} placeholder="Enter event description" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Start Date"
+              name="startDate"
+              rules={[
+                { required: true, message: "Please select the start date" },
+              ]}
+            >
+              <DatePicker style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="End Date"
+              name="endDate"
+              rules={[
+                { required: true, message: "Please select the end date" },
+              ]}
+            >
+              <DatePicker style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={[16, 16]}>
+          <Col span={12}>
+            <Form.Item
+              label="Zone ID"
+              name="zoneID"
+              rules={[{ required: true, message: "Please enter Zone ID" }]}
+            >
+              <InputNumber
+                style={{ width: "100%" }}
+                placeholder="Enter Zone ID"
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Animal ID"
+              name="animalID"
+              rules={[{ required: true, message: "Please enter Animal ID" }]}
+            >
+              <InputNumber
+                style={{ width: "100%" }}
+                placeholder="Enter Animal ID"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row justify="end">
+          <Col>
+            <Form.Item>
+              <Space>
+                <Button htmlType="button">Cancel</Button>
+                <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
+                  Create
+                </Button>
+              </Space>
+            </Form.Item>
+          </Col>
+        </Row>
       </Form>
-    </div>
+    </Card>
   );
 };
 

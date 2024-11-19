@@ -80,6 +80,12 @@ func SetupDatabase() {
 	db.FirstOrCreate(&GenderMale, &entity.Genders{Gender: "Male"})
 	db.FirstOrCreate(&GenderFemale, &entity.Genders{Gender: "Female"})
 
+	SexMale := entity.Sex{Sex: "Male"}
+	SexFemale := entity.Sex{Sex: "Female"}
+
+	db.FirstOrCreate(&SexMale, &entity.Sex{Sex: "Male"})
+	db.FirstOrCreate(&SexFemale, &entity.Sex{Sex: "Female"})
+
 	AdminRole := entity.UserRoles{RoleName: "Admin"}
 	ZookeeperRole := entity.UserRoles{RoleName: "Zookeeper"}
 	USerRole := entity.UserRoles{RoleName: "User"}

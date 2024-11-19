@@ -293,6 +293,26 @@ export const CreateHabitat = async (formData: FormData): Promise<any | false> =>
 };
 
 //Animal API
+async function GetSexs() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  let res = await fetch(`${apiUrl}/sexs`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+
+  return res;
+}
+
 export const CreateAnimal = async (formData: FormData): Promise<any | false> => {
   try {
     const response = await axios.post(`${apiUrl}/animals-create`, formData, {
@@ -334,3 +354,6 @@ export const CreateReport = async (formData: FormData): Promise<any | false> => 
   }
 };
 
+export {
+  GetSexs,
+};

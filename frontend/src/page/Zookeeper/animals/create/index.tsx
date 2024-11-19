@@ -1,19 +1,24 @@
-import React, { useState } from "react";
-import { Form, Input, InputNumber, DatePicker, Upload, Button, message } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-import { CreateAnimal } from "../../../../services/https"; 
-import moment from "moment";
-
-const { TextArea } = Input;
+import React, { useEffect, useState } from "react";
+import { Form, Input, InputNumber, Upload, Button, message, Row, Col, Space, Card, Divider,DatePicker,Select} from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import ImgCrop from "antd-img-crop";
+import { CreateAnimal,GetSexs } from "../../../../services/https"; // นำเข้า service ที่สร้าง
+import { SexsInterface }from "../../../../interface/ISex"
 
 const CreateAnimalForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [file, setFile] = useState<File | null>(null);
+  const [fileList, setFileList] = useState<any[]>([]);
+  const [sexs, setSexs] = useState<SexsInterface[]>([]);
+
+  const { Option } = Select;
 
   const onFinish = async (values: any) => {
-    const formData = new FormData();
+    if (fileList.length === 0) {
+      message.error("Please upload a picture");
+      return;
+    }
 
-    // Append all form fields to FormData
+    const formData = new FormData();
     formData.append("name", values.name);
     formData.append("description", values.description);
     formData.append("weight", values.weight);
@@ -25,166 +30,230 @@ const CreateAnimalForm: React.FC = () => {
     formData.append("sexID", values.sexID);
     formData.append("biologicalID", values.biologicalID);
     formData.append("behavioralID", values.behavioralID);
-    formData.append("employeeID", values.employeeID);
+    formData.append("employeeID", "1");  // Set EmployeeID to 1
     formData.append("habitatID", values.habitatID);
+    formData.append("picture", fileList[0].originFileObj);
 
-    if (file) {
-      formData.append("picture", file);
-    } else {
-      message.error("Please upload a picture");
-      return;
-    }
-
-    // Call API to create animal
     const response = await CreateAnimal(formData);
 
     if (response) {
       message.success("Animal created successfully!");
       form.resetFields();
-      setFile(null);
+      setFileList([]);
     } else {
       message.error("Failed to create animal.");
     }
   };
 
-  const handleFileChange = (info: any) => {
-    const fileList = info.fileList;
-    if (fileList.length > 0) {
-      setFile(fileList[0].originFileObj);
-    } else {
-      setFile(null);
+  const onChange = ({ fileList: newFileList }: any) => {
+    setFileList(newFileList);
+  };
+
+  const onPreview = async (file: any) => {
+    let src = file.url;
+    if (!src) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj);
+        reader.onload = () => resolve(reader.result as string);
+      });
+    }
+    const imgWindow = window.open(src);
+    imgWindow?.document.write(`<img src="${src}" style="max-width: 100%;" />`);
+  };
+
+  const getSex = async () => {
+    let res = await GetSexs();
+    if (res) {
+      setSexs(res);
     }
   };
 
+  useEffect(() => {
+    getSex();
+  }, []);
+
   return (
-    <div style={{ maxWidth: "600px", margin: "auto", marginTop: "50px" }}>
+    <Card>
       <h2>Create Animal</h2>
+      <Divider />
       <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item
-          label="Upload Picture"
-          name="picture"
-          rules={[{ required: true, message: "Please upload a picture" }]}
-        >
-          <Upload
-            beforeUpload={() => false}
-            maxCount={1}
-            onChange={handleFileChange}
-          >
-            <Button icon={<UploadOutlined />}>Click to Upload</Button>
-          </Upload>
-        </Form.Item>
+        <Row gutter={[16, 9]}>
+        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+            <Form.Item
+              label="Upload Picture"
+              name="picture"
+              valuePropName="fileList"
+              rules={[{
+                required: true,
+                message: "Please upload a picture",
+                validator: () => {
+                  return fileList.length > 0 ? Promise.resolve() : Promise.reject(new Error("Please upload a picture"));
+                },
+              }]}
+            >
+              <ImgCrop rotationSlider>
+                <Upload
+                  fileList={fileList}
+                  onChange={onChange}
+                  onPreview={onPreview}
+                  beforeUpload={(file) => {
+                    setFileList([file]);
+                    return false; 
+                  }}
+                  maxCount={1}
+                  listType="picture-card"
+                >
+                  {fileList.length < 1 && (
+                    <div>
+                      <PlusOutlined />
+                      <div style={{ marginTop: 8 }}>Upload</div>
+                    </div>
+                  )}
+                </Upload>
+              </ImgCrop>
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Name"
-          name="name"
-          rules={[{ required: true, message: "Please enter the animal's name" }]}
-        >
-          <Input placeholder="Enter animal name" />
-        </Form.Item>
+          <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+            <Form.Item
+              label="Name"
+              name="name"
+              rules={[{ required: true, message: "Please enter the animal's name" }]}
+            >
+              <Input placeholder="Enter animal name" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Description"
-          name="description"
-          rules={[{ required: true, message: "Please enter the description" }]}
-        >
-          <TextArea rows={4} placeholder="Enter animal description" />
-        </Form.Item>
+          <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[{ required: true, message: "Please enter the description" }]}
+            >
+              <Input.TextArea rows={4} placeholder="Enter animal description" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Weight"
-          name="weight"
-          rules={[{ required: true, message: "Please enter the animal's weight" }]}
-        >
-          <InputNumber style={{ width: "100%" }} placeholder="Enter animal weight" />
-        </Form.Item>
+          <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+            <Form.Item
+              label="Weight"
+              name="weight"
+              rules={[{ required: true, message: "Please enter the animal's weight" }]}
+            >
+              <InputNumber style={{ width: "100%" }} placeholder="Enter animal weight" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Height"
-          name="height"
-          rules={[{ required: true, message: "Please enter the animal's height" }]}
-        >
-          <InputNumber style={{ width: "100%" }} placeholder="Enter animal height" />
-        </Form.Item>
+          <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+            <Form.Item
+              label="Height"
+              name="height"
+              rules={[{ required: true, message: "Please enter the animal's height" }]}
+            >
+              <InputNumber style={{ width: "100%" }} placeholder="Enter animal height" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Birth Date"
-          name="birthDay"
-          rules={[{ required: true, message: "Please select the birth date" }]}
-        >
-          <DatePicker style={{ width: "100%" }} />
-        </Form.Item>
+          <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+            <Form.Item
+              label="Birth Date"
+              name="birthDay"
+              rules={[{ required: true, message: "Please select the birth date" }]}
+            >
+              <DatePicker style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Birthplace"
-          name="birthplace"
-          rules={[{ required: true, message: "Please enter the birthplace" }]}
-        >
-          <Input placeholder="Enter animal birthplace" />
-        </Form.Item>
+          <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+            <Form.Item
+              label="Birthplace"
+              name="birthplace"
+              rules={[{ required: true, message: "Please enter the birthplace" }]}
+            >
+              <Input placeholder="Enter animal birthplace" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Health Status"
-          name="health"
-          rules={[{ required: true, message: "Please enter the health status" }]}
-        >
-          <Input placeholder="Enter health status" />
-        </Form.Item>
+          <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+            <Form.Item
+              label="Health Status"
+              name="health"
+              rules={[{ required: true, message: "Please enter the health status" }]}
+            >
+              <Input placeholder="Enter health status" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Note"
-          name="note"
-          rules={[{ required: true, message: "Please enter a note" }]}
-        >
-          <Input placeholder="Enter any additional notes" />
-        </Form.Item>
+          <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+            <Form.Item
+              label="Note"
+              name="note"
+              rules={[{ required: true, message: "Please enter a note" }]}
+            >
+              <Input placeholder="Enter any additional notes" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Sex ID"
-          name="sexID"
-          rules={[{ required: true, message: "Please enter the sex ID" }]}
-        >
-          <InputNumber style={{ width: "100%" }} placeholder="Enter sex ID" />
-        </Form.Item>
+          <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+            <Form.Item
+              label="Sex ID"
+              name="sexID"
+              rules={[{ required: true, message: "Please enter the sex ID" }]}
+            >
+              <Select allowClear>
+                  {sexs.map((item) => (
+                    <Option value={item.ID} key={item.Sex}>
+                      {item.Sex}
+                    </Option>
+                  ))}
+                </Select>
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Biological ID"
-          name="biologicalID"
-          rules={[{ required: true, message: "Please enter the biological ID" }]}
-        >
-          <InputNumber style={{ width: "100%" }} placeholder="Enter biological ID" />
-        </Form.Item>
+          <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+            <Form.Item
+              label="Biological ID"
+              name="biologicalID"
+              rules={[{ required: true, message: "Please enter the biological ID" }]}
+            >
+              <InputNumber style={{ width: "100%" }} placeholder="Enter biological ID" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Behavioral ID"
-          name="behavioralID"
-          rules={[{ required: true, message: "Please enter the behavioral ID" }]}
-        >
-          <InputNumber style={{ width: "100%" }} placeholder="Enter behavioral ID" />
-        </Form.Item>
+          <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+            <Form.Item
+              label="Behavioral ID"
+              name="behavioralID"
+              rules={[{ required: true, message: "Please enter the behavioral ID" }]}
+            >
+              <InputNumber style={{ width: "100%" }} placeholder="Enter behavioral ID" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Employee ID"
-          name="employeeID"
-          rules={[{ required: true, message: "Please enter the employee ID" }]}
-        >
-          <InputNumber style={{ width: "100%" }} placeholder="Enter employee ID" />
-        </Form.Item>
+          <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+            <Form.Item
+              label="Habitat ID"
+              name="habitatID"
+              rules={[{ required: true, message: "Please enter the habitat ID" }]}
+            >
+              <InputNumber style={{ width: "100%" }} placeholder="Enter habitat ID" />
+            </Form.Item>
+          </Col>
+        </Row>
 
-        <Form.Item
-          label="Habitat ID"
-          name="habitatID"
-          rules={[{ required: true, message: "Please enter the habitat ID" }]}
-        >
-          <InputNumber style={{ width: "100%" }} placeholder="Enter habitat ID" />
-        </Form.Item>
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Create Animal
-          </Button>
-        </Form.Item>
+        <Row justify="end">
+          <Col>
+            <Space>
+              <Button htmlType="button">Cancel</Button>
+              <Button type="primary" htmlType="submit">
+                Create Animal
+              </Button>
+            </Space>
+          </Col>
+        </Row>
       </Form>
-    </div>
+    </Card>
   );
 };
 

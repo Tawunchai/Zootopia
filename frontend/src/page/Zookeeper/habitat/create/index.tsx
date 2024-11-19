@@ -1,106 +1,165 @@
-import React, { useState } from 'react';
-import { Form, Input, Upload, Button, message, InputNumber } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import { CreateHabitat } from '../../../../services/https';  // นำเข้า service ที่สร้าง
+import React, { useState } from "react";
+import {
+  Form,
+  Input,
+  Upload,
+  Button,
+  message,
+  InputNumber,
+  Card,
+  Divider,
+  Row,
+  Col,
+  Space,
+} from "antd";
+import ImgCrop from "antd-img-crop";
+import { PlusOutlined } from "@ant-design/icons";
+import { CreateHabitat } from "../../../../services/https"; // นำเข้า service ที่สร้าง
 
 const CreateHabitatForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [file, setFile] = useState<File | null>(null);
+  const [fileList, setFileList] = useState<any[]>([]);
 
   const onFinish = async (values: any) => {
-    const formData = new FormData();
-
-    // Append form data
-    formData.append('name', values.name);
-    formData.append('size', values.size);
-    formData.append('capacity', values.capacity);
-    formData.append('zoneID', values.zoneID);
-    
-    if (file) {
-      formData.append('picture', file);
-    } else {
-      message.error('Please upload a picture');
+    if (fileList.length === 0) {
+      message.error("Please upload a picture");
       return;
     }
 
-    // Call API to create habitat
+    const formData = new FormData();
+    formData.append("name", values.name);
+    formData.append("size", values.size);
+    formData.append("capacity", values.capacity);
+    formData.append("zoneID", values.zoneID);
+    formData.append("picture", fileList[0].originFileObj);
+
     const response = await CreateHabitat(formData);
 
     if (response) {
-      message.success('Habitat created successfully!');
+      message.success("Habitat created successfully!");
       form.resetFields();
-      setFile(null);
+      setFileList([]);
     } else {
-      message.error('Failed to create habitat.');
+      message.error("Failed to create habitat.");
     }
   };
 
-  const handleFileChange = (info: any) => {
-    const fileList = info.fileList;
-    if (fileList.length > 0) {
-      setFile(fileList[0].originFileObj);
-    } else {
-      setFile(null);
+  const onChange = ({ fileList: newFileList }: any) => {
+    setFileList(newFileList);
+  };
+
+  const onPreview = async (file: any) => {
+    let src = file.url;
+    if (!src) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj);
+        reader.onload = () => resolve(reader.result as string);
+      });
     }
+    const imgWindow = window.open(src);
+    imgWindow?.document.write(`<img src="${src}" style="max-width: 100%;" />`);
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: 'auto', marginTop: '50px' }}>
+    <Card>
       <h2>Create Habitat</h2>
+      <Divider />
       <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item
-          label="Upload Picture"
-          name="picture"
-          rules={[{ required: true, message: 'Please upload a picture' }]}
-        >
-          <Upload
-            beforeUpload={() => false}
-            maxCount={1}
-            onChange={handleFileChange}
-          >
-            <Button icon={<UploadOutlined />}>Click to Upload</Button>
-          </Upload>
-        </Form.Item>
+        <Row gutter={[16, 16]}>
+          <Col span={24}>
+            <Form.Item
+              label="Upload Picture"
+              name="picture"
+              valuePropName="fileList"
+              rules={[
+                {
+                  required: true,
+                  message: "Please upload a picture",
+                  validator: () => {
+                    return fileList.length > 0
+                    ? Promise.resolve()
+                    : Promise.reject(new Error("Please upload a picture"));
+                  },
+                },
+              ]}
+            >
+              <ImgCrop rotationSlider>
+                <Upload
+                  fileList={fileList}
+                  onChange={onChange}
+                  onPreview={onPreview}
+                  beforeUpload={(file) => {
+                    setFileList([file]);
+                    return false; // Prevent auto-upload
+                  }}
+                  maxCount={1}
+                  listType="picture-card"
+                >
+                  {fileList.length < 1 && (
+                    <div>
+                      <PlusOutlined />
+                      <div style={{ marginTop: 8 }}>Upload</div>
+                    </div>
+                  )}
+                </Upload>
+              </ImgCrop>
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Name"
-          name="name"
-          rules={[{ required: true, message: 'Please enter the habitat name' }]}
-        >
-          <Input placeholder="Enter habitat name" />
-        </Form.Item>
+          <Col span={24}>
+            <Form.Item
+              label="Name"
+              name="name"
+              rules={[{ required: true, message: "Please enter the habitat name" }]}
+            >
+              <Input placeholder="Enter habitat name" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Size"
-          name="size"
-          rules={[{ required: true, message: 'Please enter the habitat size' }]}
-        >
-          <Input placeholder="Enter habitat size" />
-        </Form.Item>
+          <Col span={24}>
+            <Form.Item
+              label="Size"
+              name="size"
+              rules={[{ required: true, message: "Please enter the habitat size" }]}
+            >
+              <Input placeholder="Enter habitat size" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Capacity"
-          name="capacity"
-          rules={[{ required: true, message: 'Please enter the capacity' }]}
-        >
-          <InputNumber style={{ width: '100%' }} placeholder="Enter capacity" />
-        </Form.Item>
+          <Col span={24}>
+            <Form.Item
+              label="Capacity"
+              name="capacity"
+              rules={[{ required: true, message: "Please enter the capacity" }]}
+            >
+              <InputNumber style={{ width: "100%" }} placeholder="Enter capacity" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Zone ID"
-          name="zoneID"
-          rules={[{ required: true, message: 'Please enter Zone ID' }]}
-        >
-          <InputNumber style={{ width: '100%' }} placeholder="Enter Zone ID" />
-        </Form.Item>
+          <Col span={24}>
+            <Form.Item
+              label="Zone ID"
+              name="zoneID"
+              rules={[{ required: true, message: "Please enter Zone ID" }]}
+            >
+              <InputNumber style={{ width: "100%" }} placeholder="Enter Zone ID" />
+            </Form.Item>
+          </Col>
+        </Row>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Create Habitat
-          </Button>
-        </Form.Item>
+        <Row justify="end">
+          <Col>
+            <Space>
+              <Button htmlType="button">Cancel</Button>
+              <Button type="primary" htmlType="submit">
+                Create Habitat
+              </Button>
+            </Space>
+          </Col>
+        </Row>
       </Form>
-    </div>
+    </Card>
   );
 };
 

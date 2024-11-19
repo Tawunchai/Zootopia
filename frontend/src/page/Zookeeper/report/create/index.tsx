@@ -1,136 +1,191 @@
 import React, { useState } from "react";
-import { Form, Input, DatePicker, Upload, Button, message, InputNumber } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import {
+  Form,
+  Input,
+  DatePicker,
+  Upload,
+  Button,
+  message,
+  InputNumber,
+  Card,
+  Divider,
+  Row,
+  Col,
+  Space,
+} from "antd";
+import ImgCrop from "antd-img-crop";
+import { PlusOutlined } from "@ant-design/icons";
 import { CreateReport } from "../../../../services/https"; // Import service function
-import moment from "moment";
 
 const { TextArea } = Input;
 
 const CreateReportForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [file, setFile] = useState<File | null>(null);
+  const [fileList, setFileList] = useState<any[]>([]);
 
   const onFinish = async (values: any) => {
-    const formData = new FormData();
+    if (fileList.length === 0) {
+      message.error("Please upload a picture");
+      return;
+    }
 
-    // Append all form fields to FormData
+    const formData = new FormData();
     formData.append("title", values.title);
     formData.append("description", values.description);
     formData.append("reportDate", values.reportDate.format("YYYY-MM-DD"));
     formData.append("status", values.status);
     formData.append("statusVet", values.statusVet);
     formData.append("animalID", values.animalID);
-    formData.append("employeeID", values.employeeID);
+    formData.append("employeeID", "1"); // Set employeeID to 1
+    formData.append("picture", fileList[0].originFileObj);
 
-    if (file) {
-      formData.append("picture", file);
-    } else {
-      message.error("Please upload a picture");
-      return;
-    }
-
-    // Call API to create report
     const response = await CreateReport(formData);
 
     if (response) {
       message.success("Report created successfully!");
       form.resetFields();
-      setFile(null);
+      setFileList([]);
     } else {
       message.error("Failed to create report.");
     }
   };
 
-  const handleFileChange = (info: any) => {
-    const fileList = info.fileList;
-    if (fileList.length > 0) {
-      setFile(fileList[0].originFileObj);
-    } else {
-      setFile(null);
+  const onChange = ({ fileList: newFileList }: any) => {
+    setFileList(newFileList);
+  };
+
+  const onPreview = async (file: any) => {
+    let src = file.url;
+    if (!src) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj);
+        reader.onload = () => resolve(reader.result as string);
+      });
     }
+    const imgWindow = window.open(src);
+    imgWindow?.document.write(`<img src="${src}" style="max-width: 100%;" />`);
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "auto", marginTop: "50px" }}>
+    <Card>
       <h2>Create Report</h2>
+      <Divider />
       <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item
-          label="Upload Picture"
-          name="picture"
-          rules={[{ required: true, message: "Please upload a picture" }]}
-        >
-          <Upload
-            beforeUpload={() => false}
-            maxCount={1}
-            onChange={handleFileChange}
-          >
-            <Button icon={<UploadOutlined />}>Click to Upload</Button>
-          </Upload>
-        </Form.Item>
+        <Row gutter={[16, 16]}>
+          <Col span={24}>
+            <Form.Item
+              label="Upload Picture"
+              name="picture"
+              valuePropName="fileList"
+              rules={[
+                {
+                  required: true,
+                  message: "Please upload a picture",
+                  validator: () => {
+                    return fileList.length > 0
+                      ? Promise.resolve()
+                      : Promise.reject(new Error("Please upload a picture"));
+                  },
+                },
+              ]}
+            >
+              <ImgCrop rotationSlider>
+                <Upload
+                  fileList={fileList}
+                  onChange={onChange}
+                  onPreview={onPreview}
+                  beforeUpload={(file) => {
+                    setFileList([file]);
+                    return false; // Prevent auto-upload
+                  }}
+                  maxCount={1}
+                  listType="picture-card"
+                >
+                  {fileList.length < 1 && (
+                    <div>
+                      <PlusOutlined />
+                      <div style={{ marginTop: 8 }}>Upload</div>
+                    </div>
+                  )}
+                </Upload>
+              </ImgCrop>
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Title"
-          name="title"
-          rules={[{ required: true, message: "Please enter the title" }]}
-        >
-          <Input placeholder="Enter report title" />
-        </Form.Item>
+          <Col span={24}>
+            <Form.Item
+              label="Title"
+              name="title"
+              rules={[{ required: true, message: "Please enter the title" }]}
+            >
+              <Input placeholder="Enter report title" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Description"
-          name="description"
-          rules={[{ required: true, message: "Please enter the description" }]}
-        >
-          <TextArea rows={4} placeholder="Enter report description" />
-        </Form.Item>
+          <Col span={24}>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[{ required: true, message: "Please enter the description" }]}
+            >
+              <TextArea rows={4} placeholder="Enter report description" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Report Date"
-          name="reportDate"
-          rules={[{ required: true, message: "Please select the report date" }]}
-        >
-          <DatePicker style={{ width: "100%" }} />
-        </Form.Item>
+          <Col span={24}>
+            <Form.Item
+              label="Report Date"
+              name="reportDate"
+              rules={[{ required: true, message: "Please select the report date" }]}
+            >
+              <DatePicker style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Status"
-          name="status"
-          rules={[{ required: true, message: "Please enter status" }]}
-        >
-          <Input placeholder="Enter status" />
-        </Form.Item>
+          <Col span={12}>
+            <Form.Item
+              label="Status"
+              name="status"
+              rules={[{ required: true, message: "Please enter status" }]}
+            >
+              <Input placeholder="Enter status" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Status of Veterinarian"
-          name="statusVet"
-          rules={[{ required: true, message: "Please enter status of veterinarian" }]}
-        >
-          <Input placeholder="Enter vet status" />
-        </Form.Item>
+          <Col span={12}>
+            <Form.Item
+              label="Status of Veterinarian"
+              name="statusVet"
+              rules={[{ required: true, message: "Please enter vet status" }]}
+            >
+              <Input placeholder="Enter vet status" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Animal ID"
-          name="animalID"
-          rules={[{ required: true, message: "Please enter Animal ID" }]}
-        >
-          <InputNumber style={{ width: "100%" }} placeholder="Enter Animal ID" />
-        </Form.Item>
+          <Col span={24}>
+            <Form.Item
+              label="Animal ID"
+              name="animalID"
+              rules={[{ required: true, message: "Please enter Animal ID" }]}
+            >
+              <InputNumber style={{ width: "100%" }} placeholder="Enter Animal ID" />
+            </Form.Item>
+          </Col>
+        </Row>
 
-        <Form.Item
-          label="Employee ID"
-          name="employeeID"
-          rules={[{ required: true, message: "Please enter Employee ID" }]}
-        >
-          <InputNumber style={{ width: "100%" }} placeholder="Enter Employee ID" />
-        </Form.Item>
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Create Report
-          </Button>
-        </Form.Item>
+        <Row justify="end">
+          <Col>
+            <Space>
+              <Button htmlType="button">Cancel</Button>
+              <Button type="primary" htmlType="submit">
+                Create Report
+              </Button>
+            </Space>
+          </Col>
+        </Row>
       </Form>
-    </div>
+    </Card>
   );
 };
 

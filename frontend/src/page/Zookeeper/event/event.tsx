@@ -1,4 +1,4 @@
-import { Layers, CalendarPlus2, SquareChartGantt } from "lucide-react";
+import { Layers } from "lucide-react";
 import Event1 from "../../../assets/zooEvent1.jpg";
 import Event2 from "../../../assets/zooEvent2.jpg";
 import { Link } from "react-router-dom";

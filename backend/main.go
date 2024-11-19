@@ -3,15 +3,16 @@ package main
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/Tawunchai/Zootopia/config"
+	"github.com/Tawunchai/Zootopia/controller/Animal"
 	"github.com/Tawunchai/Zootopia/controller/Calendar"
-	"github.com/Tawunchai/Zootopia/controller/Review"
-	"github.com/Tawunchai/Zootopia/controller/Like"
 	"github.com/Tawunchai/Zootopia/controller/Event"
 	"github.com/Tawunchai/Zootopia/controller/Habitat"
-	"github.com/Tawunchai/Zootopia/controller/Animal"
+	"github.com/Tawunchai/Zootopia/controller/Like"
 	"github.com/Tawunchai/Zootopia/controller/Report"
+	"github.com/Tawunchai/Zootopia/controller/Review"
+	"github.com/Tawunchai/Zootopia/controller/Sex"
+	"github.com/gin-gonic/gin"
 	//"github.com/Tawunchai/Zootopia/middlewares"
 )
 
@@ -36,6 +37,7 @@ func main() {
 
 		// Animals Routes
 		router.POST("/animals-create", animal.CreateAnimal)
+		router.GET("/sexs", sex.ListSex)
 
 		// Report Routes
 		router.POST("/reports-create", report.CreateReport)
