@@ -3,7 +3,7 @@ import "./animal.css";
 import { createTheme, ThemeProvider } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import { useEffect, useState } from "react";
-
+import { Link } from "react-router-dom";
 // Define type for user
 interface User {
   firstName: string;
@@ -19,36 +19,48 @@ type SelectableRows = "none" | "single" | "multiple";
 
 const columns = [
   {
-    name: 'id',
+    name: "id",
     label: "A.No",
-    options: {filter:false,},
+    options: { filter: false },
   },
   {
-    name: 'image',
-    label:'Profile',
+    name: "image",
+    label: "Profile",
     options: {
       customBodyRender: (value: string) => (
-        <img src={value} alt="picture" className="w-12 h-12 rounded-full p-3 bg-slate-500" />
+        <img
+          src={value}
+          alt="picture"
+          className="w-12 h-12 rounded-full p-3 bg-slate-500"
+        />
       ),
-      filter:false,
+      filter: false,
     },
   },
   {
-    name: 'name',
-    label:'Name',
-    options: {filter:false,},
+    name: "name",
+    label: "Name",
+    options: { filter: false },
   },
   {
-    name: 'age',
-    label:'Age',
-    options: {filter:false,},
+    name: "age",
+    label: "Age",
+    options: { filter: false },
   },
   {
-    name: 'gender',
-    label:'Gender',
+    name: "gender",
+    label: "Gender",
     options: {
       customBodyRender: (value: string) => (
-        <p className={value === "female" ? "capitalize1" : value === "male" ? "capitalize2" : ""}>
+        <p
+          className={
+            value === "female"
+              ? "capitalize1"
+              : value === "male"
+              ? "capitalize2"
+              : ""
+          }
+        >
           {value}
         </p>
       ),
@@ -105,10 +117,16 @@ const Animal = () => {
   return (
     <div className="bg-slate-700 py-10 min-h-screen grid place-items-center">
       <div className="w-10/12 max-w-4xl content-container">
-        <h1 className="header-animals-box">
-          <PawPrint size={28} style={{ marginRight: "10px" }} />
-          Animal
-        </h1>
+        <div style={{display:"flex"}}>
+          <h1 className="header-animals-box">
+            <PawPrint size={28} style={{ marginRight: "10px" }} />
+            Animal
+          </h1>
+          <Link to="/create-animal"><h1 className="header-create-animals-box">
+            <PawPrint size={28} style={{ marginRight: "10px" }} />
+            Create Animal
+          </h1></Link>
+        </div>
         <ThemeProvider theme={getMuitheme}>
           <MUIDataTable
             title={"Animals List"}

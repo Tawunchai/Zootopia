@@ -7,6 +7,7 @@ type Habitat struct {
 	Name string
 	Size float64
 	Capacity uint
+	Picture string
 
 	ZoneID uint
 	Zone   Zone `gorm:"foreignKey:ZoneID"`

@@ -2,6 +2,7 @@ import { LayoutDashboard, CopyPlus, BrickWall } from "lucide-react";
 import Habitat1 from "../../../assets/landscape-1.png";
 import Habitat2 from "../../../assets/landscape-2.png";
 import Habitat3 from "../../../assets/landscape-3.png";
+import { Link } from "react-router-dom";
 import "./stylehabitat.css";
 
 const habitat = () => {
@@ -12,10 +13,10 @@ const habitat = () => {
           <LayoutDashboard size={24} style={{ marginRight: "10px" }} />
           Habitat
         </h1>
-        <h1 className="header-habitatADD-box">
+        <Link to="/create-habitat"><h1 className="header-habitatADD-box">
           <CopyPlus size={24} style={{ marginRight: "10px" }} />
-          ADD Habitat
-        </h1>
+          Create Habitat
+        </h1></Link>
         <h1 className="header-habitatADD-box">
           <BrickWall size={24} style={{ marginRight: "10px" }} />
           Quantity

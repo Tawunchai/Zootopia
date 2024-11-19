@@ -8,6 +8,9 @@ import (
 	"github.com/Tawunchai/Zootopia/controller/Calendar"
 	"github.com/Tawunchai/Zootopia/controller/Review"
 	"github.com/Tawunchai/Zootopia/controller/Like"
+	"github.com/Tawunchai/Zootopia/controller/Event"
+	"github.com/Tawunchai/Zootopia/controller/Habitat"
+	"github.com/Tawunchai/Zootopia/controller/Animal"
 	//"github.com/Tawunchai/Zootopia/middlewares"
 )
 
@@ -28,7 +31,9 @@ func main() {
 	router := r.Group("")
 	{
 		//router.Use(middlewares.Authorizes())
+
 		// Animals Routes
+		router.POST("/animals-create", animal.CreateAnimal)
 
 		//Calendar Routes
 		router.GET("/calendar", calendar.ListCalendar)
@@ -47,6 +52,12 @@ func main() {
 		router.POST("/reviews/like", like.LikeReview)
 		router.DELETE("/reviews/unlike", like.UnlikeReview)
 		router.GET("/reviews/:userID/:reviewID/like", like.CheckUserLikeStatus)
+
+		//Event Routes
+		router.POST("/events-create", event.CreateEvent)
+
+		//Habitat Routes
+		router.POST("/habitats-create", habitat.CreateHabitat)
 	}
 
 	r.GET("/", func(c *gin.Context) {

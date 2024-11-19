@@ -13,7 +13,7 @@ type Animal struct {
 	Weight float64
 	Height float64
 	Birthplace string
-	BirthDay    time.Time `json:"BirthDay" time_format:"2006-01-02"` // edit
+	BirthDay    time.Time 
 	Picture string
 	Health string
 	Note string

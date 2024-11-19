@@ -1,19 +1,30 @@
-import { Layers ,CalendarPlus2,SquareChartGantt  } from "lucide-react";
-import Event1 from "../../../assets/zooEvent1.jpg"
-import Event2 from "../../../assets/zooEvent2.jpg"
+import { Layers, CalendarPlus2, SquareChartGantt } from "lucide-react";
+import Event1 from "../../../assets/zooEvent1.jpg";
+import Event2 from "../../../assets/zooEvent2.jpg";
+import { Link } from "react-router-dom";
 import "./event.css";
 
 const event = () => {
   return (
     <div>
-      <h1 className="header-event-box"><Layers size={24} style={{marginRight:"10px"}} />Event</h1>
+      <div style={{display:"flex"}}>
+        <h1 className="header-event-box">
+          <Layers size={24} style={{ marginRight: "10px" }} />
+          Event
+        </h1>
+        <Link to="/create-event"><h1 className="header-event-box">Create Event</h1></Link>
+      </div>
       <div className="container">
         <div className="card__container">
           <article className="card__article">
             <img
               src={Event1}
               alt="image"
-              style={{ width: "260px", height: "240px", borderRadius: "1.5rem" }}
+              style={{
+                width: "240px",
+                height: "240px",
+                borderRadius: "1.5rem",
+              }}
             />
 
             <div className="card__data">
@@ -29,7 +40,11 @@ const event = () => {
             <img
               src={Event2}
               alt="image"
-              style={{ width: "260px", height: "240px", borderRadius: "1.5rem" }}
+              style={{
+                width: "240px",
+                height: "240px",
+                borderRadius: "1.5rem",
+              }}
             />
 
             <div className="card__data">
@@ -43,7 +58,7 @@ const event = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default event
+export default event;

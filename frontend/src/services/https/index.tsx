@@ -254,3 +254,62 @@ export const SearchReviewsByKeyword = async (
   }
 };
 
+
+//Event API
+export const CreateEvent = async (formData: FormData): Promise<any | false> => {
+  try {
+    const response = await fetch(`${apiUrl}/events-create`, {
+      method: "POST",
+      body: formData, // ส่ง FormData ไปยัง backend
+    });
+
+    if (response.status !== 201) throw new Error("Invalid response from server");
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating event:", error);
+    return false;
+  }
+};
+
+
+export const CreateHabitat = async (formData: FormData): Promise<any | false> => {
+  try {
+    const response = await axios.post(`${apiUrl}/habitats-create`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',  // ส่งไฟล์รูปภาพ
+      },
+    });
+
+    if (response.status !== 201) {
+      throw new Error('Failed to create habitat.');
+    }
+
+    return response.data;  // ส่งข้อมูล habitat ที่สร้างแล้วกลับมา
+  } catch (error) {
+    console.error("Error creating habitat:", error);
+    return false;  // ส่งค่า false ถ้ามีข้อผิดพลาด
+  }
+};
+
+//Animal API
+export const CreateAnimal = async (formData: FormData): Promise<any | false> => {
+  try {
+    const response = await axios.post(`${apiUrl}/animals-create`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",  
+        Authorization: getAuthHeader(), 
+      },
+    });
+
+    if (response.status !== 201) {
+      throw new Error("Error creating animal");
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("Error creating animal:", error);
+    return false;  // Return false in case of error
+  }
+};
+

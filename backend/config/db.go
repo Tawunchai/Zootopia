@@ -68,6 +68,30 @@ func SetupDatabase() {
 	db.FirstOrCreate(&Behavioral1, &entity.Behavioral{Behavioral: "Eat meat"})
 	db.FirstOrCreate(&Behavioral2, &entity.Behavioral{Behavioral: "Eat plants"})
 
+	zone1 := entity.Zone{
+		Zone:        "Rainforest",
+		Description: "Tropical rainforest with a variety of wildlife.",
+		Price:       150.00,
+		Picture:     "rainforest.jpg",
+	}
+	zone2 := entity.Zone{
+		Zone:        "Savannah",
+		Description: "Expansive savannah with African wildlife.",
+		Price:       120.00,
+		Picture:     "savannah.jpg",
+	}
+	zone3 := entity.Zone{
+		Zone:        "Oceanarium",
+		Description: "Aquatic animals and marine life exhibits.",
+		Price:       100.00,
+		Picture:     "oceanarium.jpg",
+	}
+
+	// Insert sample zones if they don't exist
+	db.FirstOrCreate(&zone1, entity.Zone{Zone: "Rainforest"})
+	db.FirstOrCreate(&zone2, entity.Zone{Zone: "Savannah"})
+	db.FirstOrCreate(&zone3, entity.Zone{Zone: "Oceanarium"})
+
 	Employee := uint(1)
 
 	// Creating initial Calendar events

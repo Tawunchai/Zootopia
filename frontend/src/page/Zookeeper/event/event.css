@@ -16,9 +16,6 @@
 }
 
 
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap");
-
-
 :root {
 
   --first-color: hsl(82, 60%, 28%);
@@ -57,10 +54,9 @@ img {
   height: auto;
 }
 
-/*=============== CARD ===============*/
 .container {
   display: grid;
-  justify-items: start; /* จัดชิดซ้าย */
+  justify-items: start; 
   padding-block: 1.25rem;
   margin-top: 20px;
   margin-left: 60px;
@@ -77,7 +73,7 @@ img {
 }
 
 .card__data {
-    width: 100px; 
+    width: 220px; 
     height: auto; 
     background-color: var(--container-color); 
     box-shadow: 0 8px 24px hsla(0, 0%, 0%, .15); 
@@ -184,7 +180,7 @@ img {
 }
 
 /* For large devices */
-@media screen and (min-width: 1120px) {
+@media screen and (min-width: 1920px) {
   .container {
     height: 0;
   }
@@ -193,7 +189,7 @@ img {
     grid-template-columns: repeat(3, 1fr);
   }
   .card__img {
-    width: 348px;
+    width: 508px;
   }
   .card__data { 
     width: 240px;

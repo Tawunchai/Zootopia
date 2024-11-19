@@ -1,4 +1,0 @@
-<div style={{display:"flex",marginTop:"20px"}}>
-      <h1 className="header-totalanimals-box"><PawPrint size={24} style={{marginRight:"10px"}} />Total Animal : 10</h1>
-      <h1 className="header-addanimals-box">ADD Animal</h1>
-      </div>

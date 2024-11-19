@@ -12,6 +12,7 @@ type Event struct {
 	Description  string 
 	StartDate     time.Time 
 	EndDate time.Time
+	Picture string
 
 	ZoneID uint
 	Zone   Zone `gorm:"foreignKey:ZoneID"`

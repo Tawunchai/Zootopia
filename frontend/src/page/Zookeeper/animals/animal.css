@@ -16,6 +16,24 @@
     border-color: rgb(255, 183, 15);
 }
 
+.header-create-animals-box{
+  color: rgb(255, 255, 255);
+    background-color: rgb(255, 183, 15);
+    margin-left: 20px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+    font-size: 28px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    width: 300px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    border-radius: 10px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(255, 183, 15);
+}
+
 .bg-slate-700 {
     min-height: 100vh;
     display: grid;
