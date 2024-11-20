@@ -2,13 +2,19 @@ import React, { useEffect, useState } from "react";
 import { Form, Input, InputNumber, Upload, Button, message, Row, Col, Space, Card, Divider,DatePicker,Select} from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import ImgCrop from "antd-img-crop";
-import { CreateAnimal,GetSexs } from "../../../../services/https"; // นำเข้า service ที่สร้าง
+import { CreateAnimal,GetSexs,GetBehaviorals,GetBiological,ListHabitat } from "../../../../services/https"; // นำเข้า service ที่สร้าง
 import { SexsInterface }from "../../../../interface/ISex"
+import { BehavioralInterface }from "../../../../interface/IBehavioral"
+import { BiologicalInterface }from "../../../../interface/IBiological"
+import { HabitatInterface }from "../../../../interface/IHabitat"
 
 const CreateAnimalForm: React.FC = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
   const [sexs, setSexs] = useState<SexsInterface[]>([]);
+  const [behaviorals, setBehaviorals] = useState<BehavioralInterface[]>([]);
+  const [biologicals, setBiologicals] = useState<BiologicalInterface[]>([]);
+  const [habitats, setHabitats] = useState<HabitatInterface[]>([]);
 
   const { Option } = Select;
 
@@ -69,8 +75,32 @@ const CreateAnimalForm: React.FC = () => {
     }
   };
 
+  const getBiological = async () => {
+    let res = await GetBiological();
+    if (res) {
+      setBiologicals(res);
+    }
+  };
+
+  const getBehavioral = async () => {
+    let res = await GetBehaviorals();
+    if (res) {
+      setBehaviorals(res);
+    }
+  };
+
+  const getHabitat = async () => {
+    let res = await ListHabitat();
+    if (res) {
+      setHabitats(res);
+    }
+  };
+
   useEffect(() => {
     getSex();
+    getBiological();
+    getBehavioral();
+    getHabitat();
   }, []);
 
   return (
@@ -217,7 +247,13 @@ const CreateAnimalForm: React.FC = () => {
               name="biologicalID"
               rules={[{ required: true, message: "Please enter the biological ID" }]}
             >
-              <InputNumber style={{ width: "100%" }} placeholder="Enter biological ID" />
+              <Select allowClear>
+                  {biologicals.map((item) => (
+                    <Option value={item.ID} key={item.Biological}>
+                      {item.Biological}
+                    </Option>
+                  ))}
+                </Select>
             </Form.Item>
           </Col>
 
@@ -227,7 +263,13 @@ const CreateAnimalForm: React.FC = () => {
               name="behavioralID"
               rules={[{ required: true, message: "Please enter the behavioral ID" }]}
             >
-              <InputNumber style={{ width: "100%" }} placeholder="Enter behavioral ID" />
+              <Select allowClear>
+                  {behaviorals.map((item) => (
+                    <Option value={item.ID} key={item.Behavioral}>
+                      {item.Behavioral}
+                    </Option>
+                  ))}
+                </Select>
             </Form.Item>
           </Col>
 
@@ -237,7 +279,13 @@ const CreateAnimalForm: React.FC = () => {
               name="habitatID"
               rules={[{ required: true, message: "Please enter the habitat ID" }]}
             >
-              <InputNumber style={{ width: "100%" }} placeholder="Enter habitat ID" />
+              <Select allowClear>
+                  {habitats.map((item) => (
+                    <Option value={item.ID} key={item.Name}>
+                      {item.Name}
+                    </Option>
+                  ))}
+                </Select>
             </Form.Item>
           </Col>
         </Row>

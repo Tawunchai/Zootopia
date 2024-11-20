@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -6,22 +6,24 @@ import {
   Upload,
   Button,
   message,
-  InputNumber,
   Card,
   Divider,
   Row,
   Col,
-  Space,
+  Space,  Select,
 } from "antd";
 import ImgCrop from "antd-img-crop";
 import { PlusOutlined } from "@ant-design/icons";
-import { CreateReport } from "../../../../services/https"; // Import service function
+import { CreateReport,ListAnimal } from "../../../../services/https"; // Import service function
+import { AnimalsInterface } from "../../../../interface/IAnimal"
 
 const { TextArea } = Input;
 
 const CreateReportForm: React.FC = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
+  const [animals, setAnimals] = useState<AnimalsInterface[]>([]);
+  const { Option } = Select;
 
   const onFinish = async (values: any) => {
     if (fileList.length === 0) {
@@ -66,6 +68,17 @@ const CreateReportForm: React.FC = () => {
     const imgWindow = window.open(src);
     imgWindow?.document.write(`<img src="${src}" style="max-width: 100%;" />`);
   };
+
+  const getAnimal = async () => {
+    let res = await ListAnimal();
+    if (res) {
+      setAnimals(res);
+    }
+  };
+
+  useEffect(() => {
+    getAnimal();
+  }, []);
 
   return (
     <Card>
@@ -169,7 +182,13 @@ const CreateReportForm: React.FC = () => {
               name="animalID"
               rules={[{ required: true, message: "Please enter Animal ID" }]}
             >
-              <InputNumber style={{ width: "100%" }} placeholder="Enter Animal ID" />
+              <Select allowClear>
+                {animals.map((item) => (
+                  <Option value={item.ID} key={item.Name}>
+                    {item.Name}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
         </Row>

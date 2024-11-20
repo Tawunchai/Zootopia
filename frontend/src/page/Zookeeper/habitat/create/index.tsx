@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -11,15 +11,18 @@ import {
   Row,
   Col,
   Space,
+  Select,
 } from "antd";
 import ImgCrop from "antd-img-crop";
 import { PlusOutlined } from "@ant-design/icons";
-import { CreateHabitat } from "../../../../services/https"; // นำเข้า service ที่สร้าง
+import { CreateHabitat,GetZones } from "../../../../services/https"; // นำเข้า service ที่สร้าง
+import { ZoneInterface } from "../../../../interface/IZone"
 
 const CreateHabitatForm: React.FC = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
-
+  const [zones, setZones] = useState<ZoneInterface[]>([]);
+  const { Option } = Select;
   const onFinish = async (values: any) => {
     if (fileList.length === 0) {
       message.error("Please upload a picture");
@@ -60,6 +63,17 @@ const CreateHabitatForm: React.FC = () => {
     const imgWindow = window.open(src);
     imgWindow?.document.write(`<img src="${src}" style="max-width: 100%;" />`);
   };
+  
+  const getZone = async () => {
+    let res = await GetZones();
+    if (res) {
+      setZones(res);
+    }
+  };
+
+  useEffect(() => {
+    getZone();
+  }, []);
 
   return (
     <Card>
@@ -78,8 +92,8 @@ const CreateHabitatForm: React.FC = () => {
                   message: "Please upload a picture",
                   validator: () => {
                     return fileList.length > 0
-                    ? Promise.resolve()
-                    : Promise.reject(new Error("Please upload a picture"));
+                      ? Promise.resolve()
+                      : Promise.reject(new Error("Please upload a picture"));
                   },
                 },
               ]}
@@ -111,7 +125,9 @@ const CreateHabitatForm: React.FC = () => {
             <Form.Item
               label="Name"
               name="name"
-              rules={[{ required: true, message: "Please enter the habitat name" }]}
+              rules={[
+                { required: true, message: "Please enter the habitat name" },
+              ]}
             >
               <Input placeholder="Enter habitat name" />
             </Form.Item>
@@ -121,7 +137,9 @@ const CreateHabitatForm: React.FC = () => {
             <Form.Item
               label="Size"
               name="size"
-              rules={[{ required: true, message: "Please enter the habitat size" }]}
+              rules={[
+                { required: true, message: "Please enter the habitat size" },
+              ]}
             >
               <Input placeholder="Enter habitat size" />
             </Form.Item>
@@ -133,7 +151,10 @@ const CreateHabitatForm: React.FC = () => {
               name="capacity"
               rules={[{ required: true, message: "Please enter the capacity" }]}
             >
-              <InputNumber style={{ width: "100%" }} placeholder="Enter capacity" />
+              <InputNumber
+                style={{ width: "100%" }}
+                placeholder="Enter capacity"
+              />
             </Form.Item>
           </Col>
 
@@ -143,7 +164,13 @@ const CreateHabitatForm: React.FC = () => {
               name="zoneID"
               rules={[{ required: true, message: "Please enter Zone ID" }]}
             >
-              <InputNumber style={{ width: "100%" }} placeholder="Enter Zone ID" />
+              <Select allowClear>
+                {zones.map((item) => (
+                  <Option value={item.ID} key={item.Zone}>
+                    {item.Zone}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
         </Row>

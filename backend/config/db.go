@@ -100,6 +100,12 @@ func SetupDatabase() {
 	db.FirstOrCreate(&Behavioral1, &entity.Behavioral{Behavioral: "Eat meat"})
 	db.FirstOrCreate(&Behavioral2, &entity.Behavioral{Behavioral: "Eat plants"})
 
+	Biological1 := entity.Biological{Biological: "Avian"}
+	Biological2 := entity.Biological{Biological: "Mammalian"}
+
+	db.FirstOrCreate(&Biological1, &entity.Biological{Biological: "Avian"})
+	db.FirstOrCreate(&Biological2, &entity.Biological{Biological: "Mammalian"})
+
 	zone1 := entity.Zone{
 		Zone:        "Rainforest",
 		Description: "Tropical rainforest with a variety of wildlife.",

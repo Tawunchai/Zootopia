@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -11,17 +11,22 @@ import {
   Divider,
   Row,
   Col,
-  Space,
+  Space,Select,
 } from "antd";
 import ImgCrop from "antd-img-crop";
 import { PlusOutlined } from "@ant-design/icons";
-import { CreateEvent } from "../../../../services/https";
-
+import { CreateEvent,ListAnimal,GetZones } from "../../../../services/https";
+import { ZoneInterface }from "../../../../interface/IZone"
+import { AnimalsInterface }from "../../../../interface/IAnimal"
 const { TextArea } = Input;
 
 const CreateEventForm: React.FC = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
+  const [zones, setZones] = useState<ZoneInterface[]>([]);
+  const [animals, setAnimals] = useState<AnimalsInterface[]>([]);
+
+  const { Option } = Select;
 
   const onFinish = async (values: any) => {
     if (fileList.length === 0) {
@@ -66,6 +71,25 @@ const CreateEventForm: React.FC = () => {
     const imgWindow = window.open(src);
     imgWindow?.document.write(`<img src="${src}" style="max-width: 100%;" />`);
   };
+
+  const getZone = async () => {
+    let res = await GetZones();
+    if (res) {
+      setZones(res);
+    }
+  };
+
+  const getAnimal = async () => {
+    let res = await ListAnimal();
+    if (res) {
+      setAnimals(res);
+    }
+  };
+
+  useEffect(() => {
+    getZone();
+    getAnimal();
+  }, []);
 
   return (
     <Card>
@@ -167,10 +191,13 @@ const CreateEventForm: React.FC = () => {
               name="zoneID"
               rules={[{ required: true, message: "Please enter Zone ID" }]}
             >
-              <InputNumber
-                style={{ width: "100%" }}
-                placeholder="Enter Zone ID"
-              />
+              <Select allowClear>
+                  {zones.map((item) => (
+                    <Option value={item.ID} key={item.Zone}>
+                      {item.Zone}
+                    </Option>
+                  ))}
+                </Select>
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -179,10 +206,13 @@ const CreateEventForm: React.FC = () => {
               name="animalID"
               rules={[{ required: true, message: "Please enter Animal ID" }]}
             >
-              <InputNumber
-                style={{ width: "100%" }}
-                placeholder="Enter Animal ID"
-              />
+              <Select allowClear>
+                  {animals.map((item) => (
+                    <Option value={item.ID} key={item.Name}>
+                      {item.Name}
+                    </Option>
+                  ))}
+                </Select>
             </Form.Item>
           </Col>
         </Row>

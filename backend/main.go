@@ -12,8 +12,9 @@ import (
 	"github.com/Tawunchai/Zootopia/controller/Report"
 	"github.com/Tawunchai/Zootopia/controller/Review"
 	"github.com/Tawunchai/Zootopia/controller/Sex"
-		"github.com/Tawunchai/Zootopia/controller/Behavioral"
+	"github.com/Tawunchai/Zootopia/controller/Behavioral"
 	"github.com/Tawunchai/Zootopia/controller/Biological"
+	"github.com/Tawunchai/Zootopia/controller/Zone"
 	"github.com/gin-gonic/gin"
 	//"github.com/Tawunchai/Zootopia/middlewares"
 )
@@ -40,6 +41,9 @@ func main() {
 		// Animals Routes
 		router.POST("/animals-create", animal.CreateAnimal)
 		router.GET("/animals", animal.ListAnimals)
+
+		// Zone Routes
+		router.GET("/zones", zone.ListZone)
 
 		// Sex Routes
 		router.GET("/sexs", sex.ListSex)

@@ -1,11 +1,22 @@
-import { GendersInterface} from "./IGender"
+import { SexsInterface} from "./ISex"
+import { BehavioralInterface} from "./IBehavioral"
+import { BiologicalInterface} from "./IBiological"
+import { HabitatInterface} from "./IHabitat"
+import { EmployeeInterface} from "./IEmployee"
 
 export interface AnimalsInterface {
     ID?: number;
     Name?: string;
-    Description?: string;
+    Weight?: number;
+    Height?: number;
+    Birthplace?: string;
     BirthDay?: string;
-    Gender?: GendersInterface;
-    BehavioralID?: number;
-    CategoryID?: number;
+    Picture?: string;
+    Health?: string;
+    Note?: string;
+    Sex?: SexsInterface;
+    Behavioral?: BehavioralInterface;
+    Biological?: BiologicalInterface;
+    Habitat?: HabitatInterface;
+    Employee?: EmployeeInterface;
   }
