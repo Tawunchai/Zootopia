@@ -2,6 +2,7 @@ import axios from "axios";
 import { CalendarInterface } from "../../interface/ICalendar";
 import { ReviewInterface } from "../../interface/IReview";
 import { UsersInterface } from "../../interface/IUser";
+import { EventsInterface } from "../../interface/IEvent";
 
 const apiUrl = "http://localhost:8000";
 
@@ -272,7 +273,24 @@ export const CreateEvent = async (formData: FormData): Promise<any | false> => {
   }
 };
 
+export const ListEvent = async (): Promise<EventsInterface[] | false> => {
+  try {
+    const response = await fetch(`${apiUrl}/events`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
+    if (!response.ok) throw new Error("การตอบสนองของเครือข่ายไม่ถูกต้อง");
+    return await response.json();
+  } catch (error) {
+    console.error("ข้อผิดพลาดในการดึงข้อมูลรีวิว:", error);
+    return false;
+  }
+};
+
+//Habitat API
 export const CreateHabitat = async (formData: FormData): Promise<any | false> => {
   try {
     const response = await axios.post(`${apiUrl}/habitats-create`, formData, {

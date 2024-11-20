@@ -14,10 +14,22 @@ import (
 
 func ListHabitat(c *gin.Context) {
 	var habitats []entity.Habitat
+
 	db := config.DB()
-	db.Find(&habitats)
-	c.JSON(http.StatusOK, &habitats)
+	results := db.Preload("Zone").Preload("Animals").Find(&habitats)
+	if results.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": results.Error.Error()})
+		return
+	}
+
+	if results.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"message": "No habitats found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, habitats)
 }
+
 
 func CreateHabitat(c *gin.Context) {
 	var habitat entity.Habitat

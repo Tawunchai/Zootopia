@@ -12,6 +12,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func ListEvent(c *gin.Context) {
+	var events []entity.Event
+
+	db := config.DB()
+	results := db.Preload("Zone").Preload("Animal").Preload("Employee").Find(&events)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, events)
+}
+
 func CreateEvent(c *gin.Context) {
 	var event entity.Event
 	db := config.DB()

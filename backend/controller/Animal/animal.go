@@ -13,6 +13,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func ListAnimals(c *gin.Context) {
+	var animals []entity.Animal
+
+	db := config.DB()
+	results := db.Preload("Sex").Preload("Biological").Preload("Behavioral").Preload("Employee").Preload("Habitat").Find(&animals)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, animals)
+}
+
 func CreateAnimal(c *gin.Context) {
 	var animal entity.Animal
 	db := config.DB()

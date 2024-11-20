@@ -12,6 +12,8 @@ import (
 	"github.com/Tawunchai/Zootopia/controller/Report"
 	"github.com/Tawunchai/Zootopia/controller/Review"
 	"github.com/Tawunchai/Zootopia/controller/Sex"
+		"github.com/Tawunchai/Zootopia/controller/Behavioral"
+	"github.com/Tawunchai/Zootopia/controller/Biological"
 	"github.com/gin-gonic/gin"
 	//"github.com/Tawunchai/Zootopia/middlewares"
 )
@@ -37,7 +39,16 @@ func main() {
 
 		// Animals Routes
 		router.POST("/animals-create", animal.CreateAnimal)
+		router.GET("/animals", animal.ListAnimals)
+
+		// Sex Routes
 		router.GET("/sexs", sex.ListSex)
+
+		// Biological Routes
+		router.GET("/behaviorals", behavioral.ListBehaviorals)
+
+		// Biological Routes
+		router.GET("/biologicals", biological.ListBiological)
 
 		// Report Routes
 		router.POST("/reports-create", report.CreateReport)
@@ -62,9 +73,11 @@ func main() {
 
 		//Event Routes
 		router.POST("/events-create", event.CreateEvent)
+		router.GET("/events", event.ListEvent)
 
 		//Habitat Routes
 		router.POST("/habitats-create", habitat.CreateHabitat)
+		router.GET("/habitats", habitat.ListHabitat)
 	}
 
 	r.GET("/", func(c *gin.Context) {

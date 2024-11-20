@@ -291,14 +291,14 @@ const Modal: React.FC<ReviewModalProps> = ({ isVisible, handleCancel }) => {
               </div>
               {renderComment(review)}
               <div>
-  <Image
-    src={`http://localhost:8000/${review.Picture}`} // แปลง path เป็น URL เต็ม
-    alt="Review Picture"
-    width={200}
-    height={150}
-    style={{ objectFit: "cover", borderRadius: "8px" }}
-  />
-</div>
+                <Image
+                  src={`http://localhost:8000/${review.Picture}`} // แปลง path เป็น URL เต็ม
+                  alt="Review Picture"
+                  width={200}
+                  height={150}
+                  style={{ objectFit: "cover", borderRadius: "8px" }}
+                />
+              </div>
 
               <Like reviewID={review.ID ?? 0} userID={1} />
             </Card>
