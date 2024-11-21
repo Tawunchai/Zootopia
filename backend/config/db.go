@@ -132,6 +132,47 @@ func SetupDatabase() {
 
 	Employee := uint(1)
 
+	Animal1 := entity.Animal{
+		Name:        "Lion",
+		Description: "King of the Savannah",
+		Weight:      190.5,
+		Height:      1.2,
+		Birthplace:  "Africa",
+		BirthDay:    time.Date(2018, 5, 15, 0, 0, 0, 0, time.UTC),
+		Picture:     "uploads/lion.jpg",
+		Health:      "Healthy",
+		Note:        "Active and healthy",
+	
+		SexID:        SexMale.ID,
+		BiologicalID: Biological2.ID, // Mammalian
+		BehavioralID: Behavioral1.ID, // Eat meat
+		HabitatID:    zone2.ID,       // Savannah
+		EmployeeID:   1,              // Fixed Employee ID
+	}
+	
+	Animal2 := entity.Animal{
+		Name:        "Parrot",
+		Description: "A colorful tropical bird",
+		Weight:      1.5,
+		Height:      0.3,
+		Birthplace:  "South America",
+		BirthDay:    time.Date(2020, 3, 10, 0, 0, 0, 0, time.UTC),
+		Picture:     "uploads/parrot.jpg",
+		Health:      "Healthy",
+		Note:        "Lively and playful",
+	
+		SexID:        SexFemale.ID,
+		BiologicalID: Biological1.ID, 
+		BehavioralID: Behavioral2.ID, 
+		HabitatID:    zone1.ID,       
+		EmployeeID:   1,             
+	}
+	
+	// สร้างข้อมูลสัตว์ลงในฐานข้อมูล
+	db.FirstOrCreate(&Animal1, entity.Animal{Name: "Lion"})
+	db.FirstOrCreate(&Animal2, entity.Animal{Name: "Parrot"})
+	
+
 	// Creating initial Calendar events
 	initialCalendars := []entity.Calendar{
 		{
@@ -229,7 +270,7 @@ func SetupDatabase() {
 		Rating:     5,
 		Comment:    "The zoo was incredibly well-maintained, and the animals looked happy and healthy. The staff were friendly and knowledgeable, always ready to share interesting facts about the animals. I loved the interactive exhibits, especially the feeding sessions with the giraffes! Its a great place for families, and theres something for everyone to enjoy. I can't wait to visit again!",
 		ReviewDate: time.Now(),
-		Picture:    "",
+		Picture:    "uploads/zooEvent1.jpg",
 		UserID:     &uid1,
 	}
 
@@ -237,7 +278,7 @@ func SetupDatabase() {
 		Rating:     4,
 		Comment:    "The zoo had a wide variety of animals, and the staff were helpful. However, some areas felt overcrowded, and a few enclosures looked outdated. The food options were decent, but a bit overpriced. Its a nice place to visit, but it could be even better with a few updates",
 		ReviewDate: time.Now(),
-		Picture:    "",
+		Picture:    "uploads/zooEvent1.jpg",
 		UserID:     &uid2,
 	}
 
@@ -245,7 +286,7 @@ func SetupDatabase() {
 		Rating:     3,
 		Comment:    "The animals were interesting, and the staff seemed to care about them. However, some enclosures felt too small, and the facilities could have been cleaner. The ticket price was a bit high for the experience provided. It was okay, but I wouldnt rush back.",
 		ReviewDate: time.Now(),
-		Picture:    "",
+		Picture:    "uploads/zooEvent1.jpg",
 		UserID:     &uid3,
 	}
 
@@ -253,7 +294,7 @@ func SetupDatabase() {
 		Rating:     2,
 		Comment:    "The zoo was not well-maintained, and several exhibits were closed. Many enclosures seemed small and lacked enrichment for the animals. The staff were not very attentive, and the overall atmosphere felt uninviting. Unfortunately, I wouldnt recommend visiting.",
 		ReviewDate: time.Now(),
-		Picture:    "",
+		Picture:    "uploads/zooEvent1.jpg",
 		UserID:     &uid4,
 	}
 

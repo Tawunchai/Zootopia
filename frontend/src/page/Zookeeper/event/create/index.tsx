@@ -5,19 +5,19 @@ import {
   DatePicker,
   Button,
   message,
-  InputNumber,
   Upload,
   Card,
   Divider,
   Row,
   Col,
-  Space,Select,
+  Space,
+  Select,
 } from "antd";
 import ImgCrop from "antd-img-crop";
 import { PlusOutlined } from "@ant-design/icons";
-import { CreateEvent,ListAnimal,GetZones } from "../../../../services/https";
-import { ZoneInterface }from "../../../../interface/IZone"
-import { AnimalsInterface }from "../../../../interface/IAnimal"
+import { CreateEvent, ListAnimal, GetZones } from "../../../../services/https";
+import { ZoneInterface } from "../../../../interface/IZone";
+import { AnimalsInterface } from "../../../../interface/IAnimal";
 const { TextArea } = Input;
 
 const CreateEventForm: React.FC = () => {
@@ -103,7 +103,7 @@ const CreateEventForm: React.FC = () => {
         onFinish={onFinish}
       >
         <Row gutter={[16, 16]}>
-          <Col span={24}>
+          <Col xs={24} sm={16} md={16} lg={12}>
             <Form.Item
               label="Upload Picture"
               name="picture"
@@ -141,16 +141,19 @@ const CreateEventForm: React.FC = () => {
               </ImgCrop>
             </Form.Item>
           </Col>
-          <Col span={12}>
+
+          <Col xs={24} sm={16} md={16} lg={12}>
             <Form.Item
               label="Title"
               name="title"
               rules={[{ required: true, message: "Please enter the title" }]}
             >
-              <Input placeholder="Enter event title" />
+              <Input
+                style={{ width: "100%" }}
+                placeholder="Enter event title"
+              />
             </Form.Item>
-          </Col>
-          <Col span={12}>
+
             <Form.Item
               label="Description"
               name="description"
@@ -158,9 +161,14 @@ const CreateEventForm: React.FC = () => {
                 { required: true, message: "Please enter the description" },
               ]}
             >
-              <TextArea rows={4} placeholder="Enter event description" />
+              <TextArea
+                rows={4}
+                style={{ width: "100%" }}
+                placeholder="Enter event description"
+              />
             </Form.Item>
           </Col>
+
           <Col span={12}>
             <Form.Item
               label="Start Date"
@@ -192,12 +200,12 @@ const CreateEventForm: React.FC = () => {
               rules={[{ required: true, message: "Please enter Zone ID" }]}
             >
               <Select allowClear>
-                  {zones.map((item) => (
-                    <Option value={item.ID} key={item.Zone}>
-                      {item.Zone}
-                    </Option>
-                  ))}
-                </Select>
+                {zones.map((item) => (
+                  <Option value={item.ID} key={item.Zone}>
+                    {item.Zone}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -207,12 +215,12 @@ const CreateEventForm: React.FC = () => {
               rules={[{ required: true, message: "Please enter Animal ID" }]}
             >
               <Select allowClear>
-                  {animals.map((item) => (
-                    <Option value={item.ID} key={item.Name}>
-                      {item.Name}
-                    </Option>
-                  ))}
-                </Select>
+                {animals.map((item) => (
+                  <Option value={item.ID} key={item.Name}>
+                    {item.Name}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
         </Row>
@@ -221,7 +229,11 @@ const CreateEventForm: React.FC = () => {
             <Form.Item>
               <Space>
                 <Button htmlType="button">Cancel</Button>
-                <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  icon={<PlusOutlined />}
+                >
                   Create
                 </Button>
               </Space>

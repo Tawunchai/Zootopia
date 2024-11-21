@@ -3,7 +3,6 @@ import { Layers } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ListEvent } from "../../../services/https";
 import { EventsInterface } from "../../../interface/IEvent";
-import { Image } from "antd";
 import "./event.css";
 
 const Event = () => {

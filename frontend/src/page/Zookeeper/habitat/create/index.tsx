@@ -81,7 +81,7 @@ const CreateHabitatForm: React.FC = () => {
       <Divider />
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Row gutter={[16, 16]}>
-          <Col span={24}>
+        <Col span={24}>
             <Form.Item
               label="Upload Picture"
               name="picture"
@@ -121,7 +121,7 @@ const CreateHabitatForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={24}>
+          <Col xs={24} sm={8} md={8} lg={12}>
             <Form.Item
               label="Name"
               name="name"
@@ -133,7 +133,7 @@ const CreateHabitatForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={24}>
+          <Col xs={24} sm={8} md={8} lg={12}>
             <Form.Item
               label="Size"
               name="size"
@@ -145,7 +145,7 @@ const CreateHabitatForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={24}>
+          <Col xs={24} sm={8} md={8} lg={12}>
             <Form.Item
               label="Capacity"
               name="capacity"
@@ -158,7 +158,7 @@ const CreateHabitatForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={24}>
+          <Col xs={24} sm={8} md={8} lg={12}>
             <Form.Item
               label="Zone ID"
               name="zoneID"

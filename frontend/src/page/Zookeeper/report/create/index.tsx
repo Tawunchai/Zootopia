@@ -86,7 +86,7 @@ const CreateReportForm: React.FC = () => {
       <Divider />
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Row gutter={[16, 16]}>
-          <Col span={24}>
+        <Col xs={24} sm={16} md={16} lg={12}>
             <Form.Item
               label="Upload Picture"
               name="picture"
@@ -126,7 +126,7 @@ const CreateReportForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={24}>
+          <Col xs={24} sm={16} md={16} lg={12}>
             <Form.Item
               label="Title"
               name="title"
@@ -134,9 +134,8 @@ const CreateReportForm: React.FC = () => {
             >
               <Input placeholder="Enter report title" />
             </Form.Item>
-          </Col>
 
-          <Col span={24}>
+
             <Form.Item
               label="Description"
               name="description"
@@ -146,7 +145,7 @@ const CreateReportForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={24}>
+          <Col xs={24} sm={8} md={8} lg={12}>
             <Form.Item
               label="Report Date"
               name="reportDate"
@@ -156,7 +155,7 @@ const CreateReportForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={12}>
+          <Col xs={24} sm={8} md={8} lg={12}>
             <Form.Item
               label="Status"
               name="status"
@@ -166,7 +165,7 @@ const CreateReportForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={12}>
+          <Col xs={24} sm={8} md={8} lg={12}>
             <Form.Item
               label="Status of Veterinarian"
               name="statusVet"
@@ -176,7 +175,7 @@ const CreateReportForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={24}>
+          <Col xs={24} sm={8} md={8} lg={12}>
             <Form.Item
               label="Animal ID"
               name="animalID"
