@@ -130,6 +130,25 @@ func SetupDatabase() {
 	db.FirstOrCreate(&zone2, entity.Zone{Zone: "Savannah"})
 	db.FirstOrCreate(&zone3, entity.Zone{Zone: "Oceanarium"})
 
+	habitat1 := entity.Habitat{
+		Name:     "Tropical Habitat",
+		Size:     2500.00,
+		Capacity: 50,
+		Picture:  "tropical_habitat.jpg",
+		ZoneID:   zone1.ID, 
+	}
+
+	habitat2 := entity.Habitat{
+		Name:     "African Plains Habitat",
+		Size:     3000.00,
+		Capacity: 75,
+		Picture:  "african_plains_habitat.jpg",
+		ZoneID:   zone2.ID, 
+	}
+
+	db.Create(&habitat1)
+	db.Create(&habitat2)
+
 	Employee := uint(1)
 
 	Animal1 := entity.Animal{
@@ -146,7 +165,7 @@ func SetupDatabase() {
 		SexID:        SexMale.ID,
 		BiologicalID: Biological2.ID, // Mammalian
 		BehavioralID: Behavioral1.ID, // Eat meat
-		HabitatID:    zone2.ID,       // Savannah
+		HabitatID:    habitat1.ID,       // Savannah
 		EmployeeID:   1,              // Fixed Employee ID
 	}
 	
@@ -164,7 +183,7 @@ func SetupDatabase() {
 		SexID:        SexFemale.ID,
 		BiologicalID: Biological1.ID, 
 		BehavioralID: Behavioral2.ID, 
-		HabitatID:    zone1.ID,       
+		HabitatID:    habitat2.ID,       
 		EmployeeID:   1,             
 	}
 	
@@ -172,7 +191,6 @@ func SetupDatabase() {
 	db.FirstOrCreate(&Animal1, entity.Animal{Name: "Lion"})
 	db.FirstOrCreate(&Animal2, entity.Animal{Name: "Parrot"})
 	
-
 	// Creating initial Calendar events
 	initialCalendars := []entity.Calendar{
 		{

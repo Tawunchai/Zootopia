@@ -8,11 +8,12 @@ import Habitat from "./page/Zookeeper/habitat/habitat";
 import Work from "./page/Zookeeper/work/work";
 import Report from "./page/Zookeeper/report/report";
 import Reviews from "./page/reviews/review";
-import MyTicket from "./page/reviews/MyTicket/myticket"; // อย่าลืมเปลี่ยนชื่อ
-import CreateEvent from "./page/Zookeeper/event/create/index"; // อย่าลืมเปลี่ยนชื่อ
-import CreateHabitat from "./page/Zookeeper/habitat/create/index"; // อย่าลืมเปลี่ยนชื่อ
-import CreateAnimal from "./page/Zookeeper/animals/create/index"; // อย่าลืมเปลี่ยนชื่อ
-import CreateReport from "./page/Zookeeper/report/create/index"; // อย่าลืมเปลี่ยนชื่อ
+import MyTicket from "./page/reviews/MyTicket/myticket"; 
+import CreateEvent from "./page/Zookeeper/event/create/index"; 
+import CreateHabitat from "./page/Zookeeper/habitat/create/index"; 
+import CreateAnimal from "./page/Zookeeper/animals/create/index"; 
+import EditAnimal from "./page/Zookeeper/animals/edit/index"; 
+import CreateReport from "./page/Zookeeper/report/create/index";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
             <Route path="/create-habitat" element={<CreateHabitat />} />
             <Route path="/create-animal" element={<CreateAnimal />} />
             <Route path="/create-report" element={<CreateReport />} />
+            <Route path="/animals/edit/:id" element={<EditAnimal />} />
           </Routes>
         </main>
       </div>

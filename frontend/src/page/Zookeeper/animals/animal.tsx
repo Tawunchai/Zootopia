@@ -1,86 +1,155 @@
 import { PawPrint } from "lucide-react";
 import "./animal.css";
+import { Button, Modal, message } from "antd";
+import {EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { createTheme, ThemeProvider } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { ListAnimal } from "../../../services/https"; // Assuming this is imported correctly
-import { AnimalsInterface } from "../../../interface/IAnimal"; // Updated import
+import { Link, useNavigate } from "react-router-dom";
+import { ListAnimal, DeleteAnimalByID } from "../../../services/https"; 
+import { AnimalsInterface } from "../../../interface/IAnimal";
 
 // Define selectable rows options
 type SelectableRows = "none" | "single" | "multiple";
 
-// Define columns for MUIDataTable
-const columns = [
-  {
-    name: "ID",
-    label: "A.No",
-    options: { filter: false },
-  },
-  {
-    name: "Picture",
-    label: "Profile",
-    options: {
-      customBodyRender: (value: string) => (
-        <img
-          src={`http://localhost:8000/${value || "default-image.jpg"}`} 
-          style={{width:"100px",borderRadius:"80px"}}
-          alt="profile"
-          className="w-12 h-12 rounded-full p-3 bg-slate-500"
-        />
-      ),
-      filter: false,
-    },
-  },
-  {
-    name: "Name",
-    label: "Name",
-    options: { filter: false },
-  },
-  {
-    name: "Weight",
-    label: "Weight",
-    options: { filter: false },
-  },
-  {
-    name: "Height",
-    label: "Height",
-    options: { filter: false },
-  },
-];
-
 const Animal = () => {
   const [animals, setAnimals] = useState<AnimalsInterface[]>([]);
+  const [open, setOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [modalText, setModalText] = useState<string>("");
+  const [deleteId, setDeleteId] = useState<number | undefined>();
+  const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
 
-  // Fetch animals data on component mount
-  useEffect(() => {
-    ListAnimal()
-      .then((data) => {
-        console.log("API Response Data:", data); // Log the response data for debugging
-        if (data && data.length > 0) {
-          const local = data.map((animal) => ({
-            ID: animal.ID, 
-            Name: animal.Name, 
-            Weight: animal.Weight, 
-            Height: animal.Height, 
-            Picture: animal.Picture, // Ensure the Picture path is correct
-            Sex: animal.Sex,
-            Behavioral: animal.Behavioral,
-            Biological: animal.Biological,
-            Habitat: animal.Habitat,
-            Employee: animal.Employee,
-          }));
-          setAnimals(local);
-        } else {
-          console.error("No data returned from ListAnimal");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching animal data:", error);
+  // Define columns for MUIDataTable
+  const columns = [
+    {
+      name: "ID",
+      label: "A.No",
+      options: { filter: false },
+    },
+    {
+      name: "Picture",
+      label: "Profile",
+      options: {
+        customBodyRender: (value: string) => (
+          <img
+            src={`http://localhost:8000/${value || "default-image.jpg"}`}
+            style={{ width: "100px", borderRadius: "80px" }}
+            alt="profile"
+          />
+        ),
+        filter: false,
+      },
+    },
+    {
+      name: "Name",
+      label: "Name",
+      options: { filter: false },
+    },
+    {
+      name: "Weight",
+      label: "Weight",
+      options: { filter: false },
+    },
+    {
+      name: "Height",
+      label: "Height",
+      options: { filter: false },
+    },
+    {
+      name: "Manage",
+      label: "Manage",
+      options: {
+        customBodyRender: (value: unknown, tableMeta: { rowIndex: number }) => {
+          console.log(value);
+          const record = animals[tableMeta.rowIndex];
+          return (
+            <>
+              <Button
+                onClick={() => navigate(`/animals/edit/${record.ID}`)}
+                shape="circle"
+                icon={<EditOutlined />}
+                size={"large"}
+              />
+              <Button
+                onClick={() => showModal(record)}
+                style={{ marginLeft: 10 }}
+                shape="circle"
+                icon={<DeleteOutlined />}
+                size={"large"}
+                danger
+              />
+            </>
+          );
+        },
+      },
+    },
+  ];
+
+  const showModal = (val: AnimalsInterface) => {
+    setModalText(`Are you sure you want to delete "${val.Name}"?`);
+    setDeleteId(val.ID);
+    setOpen(true);
+  };
+
+  const handleOk = async () => {
+    setConfirmLoading(true);
+    console.log("Attempting to delete animal with ID:", deleteId);
+
+    try {
+      const res = await DeleteAnimalByID(deleteId);
+      if (res) {
+        setOpen(false);
+        messageApi.open({
+          type: "success",
+          content: "Successfully deleted!",
+        });
+        getAnimals();
+      } else {
+        throw new Error("Delete failed");
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "An error occurred!",
       });
+    }
+    setConfirmLoading(false);
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
+  const getAnimals = async () => {
+    console.log("Fetching animal data...");
+    try {
+      const res = await ListAnimal();
+      console.log("ListAnimal response:", res);
+
+      if (res && res.length > 0) {
+        const processedData = res.map((animal: AnimalsInterface) => ({
+          ID: animal.ID,
+          Name: animal.Name,
+          Weight: animal.Weight,
+          Height: animal.Height,
+          Picture: animal.Picture,
+        }));
+        setAnimals(processedData);
+        console.log("Processed Animals Data:", processedData);
+      } else {
+        console.error("No data returned from ListAnimal");
+      }
+    } catch (error) {
+      console.error("Error fetching animal data:", error);
+    }
+  };
+
+  useEffect(() => {
+    getAnimals();
   }, []);
 
-  // Define options for MUI DataTable
   const options = {
     selectableRows: "none" as SelectableRows, // Ensuring correct type for selectableRows
     filterType: "checkbox" as const,
@@ -88,7 +157,6 @@ const Animal = () => {
     rowsPerPageOptions: [5, 10, 20, 30], // Options for number of rows per page
   };
 
-  // Define custom MUI theme
   const getMuitheme = () =>
     createTheme({
       typography: {
@@ -114,6 +182,7 @@ const Animal = () => {
 
   return (
     <div className="bg-slate-700 py-10 min-h-screen grid place-items-center">
+      {contextHolder}
       <div className="w-10/12 max-w-4xl content-container">
         <div style={{ display: "flex" }}>
           <h1 className="header-animals-box">
@@ -130,12 +199,21 @@ const Animal = () => {
         <ThemeProvider theme={getMuitheme}>
           <MUIDataTable
             title={"Animals List"}
-            data={animals} // Use the animals state here
+            data={animals}
             columns={columns}
             options={options}
           />
         </ThemeProvider>
       </div>
+      <Modal
+        title="Delete Confirmation"
+        open={open}
+        onOk={handleOk}
+        confirmLoading={confirmLoading}
+        onCancel={handleCancel}
+      >
+        <p>{modalText}</p>
+      </Modal>
     </div>
   );
 };

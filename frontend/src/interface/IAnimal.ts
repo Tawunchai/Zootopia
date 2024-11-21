@@ -10,6 +10,7 @@ export interface AnimalsInterface {
     Weight?: number;
     Height?: number;
     Birthplace?: string;
+    Description?:string;
     BirthDay?: string;
     Picture?: string;
     Health?: string;

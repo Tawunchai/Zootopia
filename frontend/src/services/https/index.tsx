@@ -448,6 +448,59 @@ export const CreateAnimal = async (formData: FormData): Promise<any | false> => 
   }
 };
 
+async function DeleteAnimalByID(id: Number | undefined) {
+  const requestOptions = {
+    method: "DELETE"
+  };
+
+  let res = await fetch(`${apiUrl}/animals/${id}`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+  return res;
+}
+
+async function GetAnimalById(id: Number | undefined) {
+  const requestOptions = {
+    method: "GET"
+  };
+
+  let res = await fetch(`${apiUrl}/animal/${id}`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+
+  return res;
+}
+
+async function UpdateAnimal(data: AnimalsInterface) {
+  const requestOptions = {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data), 
+  };
+
+  let res = await fetch(`${apiUrl}/animals/${data.ID}`, requestOptions)  
+    .then((res) => {
+      if (res.status === 200) {
+        return res.json();  
+      } else {
+        return false;  
+      }
+    });
+
+  return res;
+}
+
 //Report API
 export const CreateReport = async (formData: FormData): Promise<any | false> => {
   try {
@@ -474,4 +527,7 @@ export {
   GetBiological,
   GetBehaviorals,
   GetZones,
+  DeleteAnimalByID,
+  GetAnimalById,
+  UpdateAnimal,
 };

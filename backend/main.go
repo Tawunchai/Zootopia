@@ -41,6 +41,10 @@ func main() {
 		// Animals Routes
 		router.POST("/animals-create", animal.CreateAnimal)
 		router.GET("/animals", animal.ListAnimals)
+		router.DELETE("/animals/:id", animal.DeleteAnimal)
+		router.GET("/animal/:id", animal.GetAnimalById)
+		r.PATCH("/animals/:id", animal.UpdateAnimal)
+
 
 		// Zone Routes
 		router.GET("/zones", zone.ListZone)
