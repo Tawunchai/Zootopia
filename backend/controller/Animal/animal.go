@@ -171,57 +171,88 @@ func GetAnimalById(c *gin.Context) {
 }
 
 func UpdateAnimal(c *gin.Context) {
-	var animal entity.Animal
-	db := config.DB()
+    var animal entity.Animal
+    db := config.DB()
 
-	// Retrieve the animal ID from the URL path
-	id := c.Param("id")
-	if id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing animal ID"})
-		return
-	}
 
-	// Fetch the existing animal by ID
-	if err := db.Where("id = ?", id).First(&animal).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Animal not found"})
-		return
-	}
+    id := c.Param("id")
+    if id == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Missing animal ID"})
+        return
+    }
 
-	// Bind the JSON body to the animal struct
-	if err := c.BindJSON(&animal); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Failed to bind JSON: %v", err)})
-		return
-	}
 
-	// Process fields that might have been updated (for example, the picture)
-	if image, err := c.FormFile("picture"); err == nil {
-		uploadDir := "uploads"
-		if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to create upload directory: %v", err)})
-			return
-		}
+    if err := db.Where("id = ?", id).First(&animal).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Animal not found"})
+        return
+    }
 
-		// Save the new image if uploaded
-		filePath := filepath.Join(uploadDir, image.Filename)
-		if err := c.SaveUploadedFile(image, filePath); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to save image: %v", err)})
-			return
-		}
-		animal.Picture = filePath
-	}
 
-	// Save the updated animal to the database
-	if err := db.Save(&animal).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to update animal: %v", err)})
-		return
-	}
+    if err := c.Request.ParseMultipartForm(32 << 20); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse form"})
+        return
+    }
 
-	// Return the updated animal
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Animal updated successfully",
-		"data":    animal,
-	})
+
+    animal.Name = c.PostForm("Name")
+    weight := c.PostForm("Weight")
+    height := c.PostForm("Height")
+    animal.Description = c.PostForm("Description")
+
+
+    if weight != "" {
+        if w, err := strconv.ParseFloat(weight, 64); err == nil {
+            animal.Weight = w
+        }
+    }
+    if height != "" {
+        if h, err := strconv.ParseFloat(height, 64); err == nil {
+            animal.Height = h
+        }
+    }
+
+    file, err := c.FormFile("Picture")
+    if err == nil && file != nil {
+        uploadDir := "uploads"
+        if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create upload directory"})
+            return
+        }
+
+        filePath := filepath.Join(uploadDir, file.Filename)
+        if err := c.SaveUploadedFile(file, filePath); err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
+            return
+        }
+
+        animal.Picture = filePath
+    }
+
+    if err := db.Save(&animal).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to update animal: %v", err)})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Animal updated successfully", "data": animal})
 }
+
+func ServeImage(c *gin.Context) {
+    fileName := c.Param("filename")
+    filePath := filepath.Join("uploads", fileName)
+
+    if _, err := os.Stat(filePath); os.IsNotExist(err) {
+        c.JSON(http.StatusNotFound, gin.H{"error": "ไม่พบไฟล์"})
+        return
+    }
+
+    c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+    c.Header("Pragma", "no-cache")
+    c.Header("Expires", "0")
+
+    c.File(filePath)
+}
+
+
 
 
 

@@ -74,13 +74,16 @@ const Calendar = () => {
       return;
     }
   
-
-    const startDate = new Date(selectedDate.startStr);
-    startDate.setHours(0, 0, 0, 0); 
+    // ตั้งเวลาให้เป็นเวลา 00:00:00 ของวันที่เลือก (ในเขตเวลา Asia/Bangkok)
+    const startDate = new Date(selectedDate.startStr); 
+    startDate.setHours(0, 0, 0, 0);  // ตั้งเวลาให้เป็น 00:00:00
+  
+    // แปลงเวลาเป็นรูปแบบ ISO string (โดยคำนึงถึงเขตเวลาของผู้ใช้)
+    const isoDate = startDate.toISOString(); 
   
     const newCalendar: Omit<CalendarInterface, "ID"> & { ID: number } = {
       Title: modalTitle,
-      StartDate: startDate.toISOString(), 
+      StartDate: isoDate, // ใช้ ISO string เพื่อส่งไปยัง backend
       AllDay: true,
       EmployeeID: 1, 
       ID: 0,        
@@ -93,15 +96,14 @@ const Calendar = () => {
       setIsModalVisible(false);
       message.success("สร้างเหตุการณ์สำเร็จ!");
   
-  
       fetchTasks(); 
-  
-     
       navigate("/calendar"); 
     } catch (error) {
       message.error("ไม่สามารถสร้างเหตุการณ์ได้");
     }
   };
+  
+  
   
   
 

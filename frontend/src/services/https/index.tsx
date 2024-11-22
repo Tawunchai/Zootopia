@@ -482,24 +482,34 @@ async function GetAnimalById(id: Number | undefined) {
   return res;
 }
 
-async function UpdateAnimal(data: AnimalsInterface) {
+async function UpdateAnimal(data: AnimalsInterface, file?: File) {
+  const formData = new FormData();
+  
+  for (const key in data) {
+    formData.append(key, data[key as keyof AnimalsInterface] as string);
+  }
+
+  if (file) {
+    formData.append("Picture", file);
+  }
+
   const requestOptions = {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data), 
+    body: formData,
   };
 
-  let res = await fetch(`${apiUrl}/animals/${data.ID}`, requestOptions)  
+  let res = await fetch(`${apiUrl}/animals/${data.ID}`, requestOptions)
     .then((res) => {
       if (res.status === 200) {
-        return res.json();  
+        return res.json();
       } else {
-        return false;  
+        return false;
       }
     });
 
   return res;
 }
+
 
 //Report API
 export const CreateReport = async (formData: FormData): Promise<any | false> => {

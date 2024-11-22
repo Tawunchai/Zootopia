@@ -196,13 +196,13 @@ func SetupDatabase() {
 		{
 			Title:     "Animal Feeding",
 			StartDate: time.Date(2024, 11, 20, 8, 0, 0, 0, time.UTC), // Example: 2024-11-20 08:00:00 UTC
-			AllDay:    false,
+			AllDay:    true,
 			EmployeeID: &Employee, // Associate with employee (e.g., employee ID)
 		},
 		{
 			Title:     "Health Checkup",
 			StartDate: time.Date(2024, 11, 22, 10, 0, 0, 0, time.UTC), // Example: 2024-11-22 10:00:00 UTC
-			AllDay:    false,
+			AllDay:    true,
 			EmployeeID: &Employee,
 		},
 	}

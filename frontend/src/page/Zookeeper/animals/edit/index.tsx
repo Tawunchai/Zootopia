@@ -48,28 +48,28 @@ const CreateAnimalForm: React.FC = () => {
   const onFinish = async (values: any) => {
     values.ID = animals?.ID; // ตรวจสอบ ID ของสัตว์ที่ต้องการอัปเดต
   
-    if (fileList.length > 0) {
-      values.Picture = `uploads/${fileList[0].name}`;
-    }
+    const file = fileList.length > 0 ? fileList[0].originFileObj : null;
   
-    console.log('Values to be submitted:', values); 
+    console.log('Values to be submitted:', values);
   
-    let res = await UpdateAnimal(values); 
+    let res = await UpdateAnimal(values, file); // ส่งค่าไปพร้อมไฟล์ภาพ
+  
     if (res) {
       messageApi.open({
         type: "success",
-        content: res.message, 
+        content: res.message,
       });
-      setTimeout(function () {
-        navigate("/"); 
+      setTimeout(() => {
+        navigate("/");
       }, 2000);
     } else {
       messageApi.open({
         type: "error",
-        content: "Failed to update animal data", // ถ้าเกิดข้อผิดพลาด
+        content: "Failed to update animal data",
       });
     }
   };
+  
 
   const onChange = ({ fileList: newFileList }: any) => {
     setFileList(newFileList);

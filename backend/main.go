@@ -35,7 +35,7 @@ func main() {
 
 	router := r.Group("")
 	{
-		r.Static("/uploads", "./uploads") // กำหนด static route
+		router.GET("/uploads/:filename", animal.ServeImage)
 		//router.Use(middlewares.Authorizes())
 
 		// Animals Routes
@@ -44,6 +44,7 @@ func main() {
 		router.DELETE("/animals/:id", animal.DeleteAnimal)
 		router.GET("/animal/:id", animal.GetAnimalById)
 		r.PATCH("/animals/:id", animal.UpdateAnimal)
+
 
 
 		// Zone Routes
