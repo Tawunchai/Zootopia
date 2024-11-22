@@ -309,6 +309,51 @@ async function DeleteEventByID(id: Number | undefined) {
   return res;
 }
 
+async function GetEventById(id: Number | undefined) {
+  const requestOptions = {
+    method: "GET"
+  };
+
+  let res = await fetch(`${apiUrl}/event/${id}`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+
+  return res;
+}
+
+async function UpdateEvent(data: EventsInterface, file?: File) {
+  const formData = new FormData();
+  
+  for (const key in data) {
+    formData.append(key, data[key as keyof EventsInterface] as string);
+  }
+
+  if (file) {
+    formData.append("Picture", file);
+  }
+
+  const requestOptions = {
+    method: "PATCH",
+    body: formData,
+  };
+
+  let res = await fetch(`${apiUrl}/events/${data.ID}`, requestOptions)
+    .then((res) => {
+      if (res.status === 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+
+  return res;
+}
+
 //Habitat API
 export const ListHabitat = async (): Promise<HabitatInterface[] | false> => {
   try {
@@ -558,5 +603,7 @@ export {
   DeleteAnimalByID,
   GetAnimalById,
   UpdateAnimal,
-  DeleteEventByID
+  DeleteEventByID,
+  GetEventById,
+  UpdateEvent,
 };

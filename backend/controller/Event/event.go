@@ -1,6 +1,7 @@
 package event
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -124,3 +125,70 @@ func DeleteEvent(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "event deleted successfully"})
 }
+
+func GetEventById(c *gin.Context) {
+	id := c.Param("id")
+	db := config.DB()
+
+	var event entity.Event
+
+	if err := db.Preload("Zone").Preload("Animal").Preload("Employee").Where("id = ?", id).First(&event).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, event)
+}
+
+func UpdateEvent(c *gin.Context) {
+    var event entity.Event
+    db := config.DB()
+
+
+    id := c.Param("id")
+    if id == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Missing animal ID"})
+        return
+    }
+
+
+    if err := db.Where("id = ?", id).First(&event).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Animal not found"})
+        return
+    }
+
+
+    if err := c.Request.ParseMultipartForm(32 << 20); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse form"})
+        return
+    }
+
+
+    event.Title = c.PostForm("title")
+    event.Description = c.PostForm("description")
+
+    file, err := c.FormFile("Picture")
+    if err == nil && file != nil {
+        uploadDir := "uploads"
+        if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create upload directory"})
+            return
+        }
+
+        filePath := filepath.Join(uploadDir, file.Filename)
+        if err := c.SaveUploadedFile(file, filePath); err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
+            return
+        }
+
+        event.Picture = filePath
+    }
+
+    if err := db.Save(&event).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to update animal: %v", err)})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Animal updated successfully", "data": event})
+}
+

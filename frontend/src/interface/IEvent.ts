@@ -1,3 +1,8 @@
+import { EmployeeInterface} from "./IEmployee"
+import { AnimalsInterface} from "./IAnimal"
+import { ZoneInterface} from "./IZone"
+
+
 export interface EventsInterface {
     ID?: number;
     Title?: string;
@@ -5,7 +10,7 @@ export interface EventsInterface {
     StartDate?: string;
     EndDate?: string;
     Picture?:string;
-    ZoneID?: number;
-    AnimalID?: number;
-    EmployeeID?: number;
+    ZoneID?: ZoneInterface;
+    AnimalID?: AnimalsInterface;
+    EmployeeID?: EmployeeInterface;
   }

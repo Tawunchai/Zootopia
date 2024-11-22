@@ -84,6 +84,8 @@ func main() {
 		router.POST("/events-create", event.CreateEvent)
 		router.GET("/events", event.ListEvent)
 		router.DELETE("/events/:id", event.DeleteEvent)
+		router.GET("/event/:id", event.GetEventById)
+		r.PATCH("/events/:id", event.UpdateEvent)
 
 		//Habitat Routes
 		router.POST("/habitats-create", habitat.CreateHabitat)

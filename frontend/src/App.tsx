@@ -14,6 +14,7 @@ import CreateHabitat from "./page/Zookeeper/habitat/create/index";
 import CreateAnimal from "./page/Zookeeper/animals/create/index"; 
 import EditAnimal from "./page/Zookeeper/animals/edit/index"; 
 import CreateReport from "./page/Zookeeper/report/create/index";
+import EditEvent from "./page/Zookeeper/event/edit/index"; 
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             <Route path="/create-animal" element={<CreateAnimal />} />
             <Route path="/create-report" element={<CreateReport />} />
             <Route path="/animals/edit/:id" element={<EditAnimal />} />
+            <Route path="/events/edit/:id" element={<EditEvent />} />
           </Routes>
         </main>
       </div>

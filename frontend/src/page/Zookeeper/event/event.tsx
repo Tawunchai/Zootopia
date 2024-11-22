@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Layers } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { ListEvent,DeleteEventByID } from "../../../services/https";
+import { ListEvent, DeleteEventByID } from "../../../services/https";
 import { EventsInterface } from "../../../interface/IEvent";
-import { Button, Modal, message } from "antd";
+import {  Modal, message } from "antd";
 import "./event.css";
 
 const Event = () => {
@@ -15,20 +15,29 @@ const Event = () => {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
 
-  useEffect(() => {
-    const loadEvents = async () => {
+  // Function to fetch events from the server
+  const getEvents = async () => {
+    try {
       const data = await ListEvent();
       if (data) {
-        console.log(data);
         setEvents(data);
+      } else {
+        console.error("No data returned from ListEvent");
       }
-    };
-    loadEvents();
+    } catch (error) {
+      console.error("Error fetching event data:", error);
+    }
+  };
+
+  // Fetch events on component mount
+  useEffect(() => {
+    getEvents();
   }, []);
 
+  // Handle modal OK (delete confirmation)
   const handleOk = async () => {
     setConfirmLoading(true);
-    console.log("Attempting to delete animal with ID:", deleteId);
+    console.log("Attempting to delete event with ID:", deleteId);
 
     try {
       const res = await DeleteEventByID(deleteId);
@@ -38,58 +47,35 @@ const Event = () => {
           type: "success",
           content: "Successfully deleted!",
         });
-        getAnimals();
+        // Refresh the events list
+        await getEvents();
       } else {
         throw new Error("Delete failed");
       }
     } catch (error) {
       messageApi.open({
         type: "error",
-        content: "An error occurred!",
+        content: "An error occurred while deleting the event!",
       });
     }
     setConfirmLoading(false);
   };
 
+  // Handle modal cancel
   const handleCancel = () => {
     setOpen(false);
   };
 
-  const showModal = (val: EventsInterface) => {
-    setModalText(`Are you sure you want to delete "${val.Title}"?`);
-    setDeleteId(val.ID);
+  // Show delete confirmation modal
+  const showModal = (event: EventsInterface) => {
+    setModalText(`Are you sure you want to delete "${event.Title}"?`);
+    setDeleteId(event.ID);
     setOpen(true);
   };
 
-  const getAnimals = async () => {
-    console.log("Fetching animal data...");
-    try {
-      const res = await ListEvent();
-      console.log("ListAnimal response:", res);
-
-      if (res && res.length > 0) {
-        const processedData = res.map((event: EventsInterface) => ({
-          ID: event.ID,
-          Name: event.Title,
-          Description: event.Description,
-          Picture: event.Picture,
-        }));
-        setEvents(processedData);
-        console.log("Processed Animals Data:", processedData);
-      } else {
-        console.error("No data returned from ListAnimal");
-      }
-    } catch (error) {
-      console.error("Error fetching animal data:", error);
-    }
-  };
-
-  useEffect(() => {
-    getAnimals();
-  }, []);
-
   return (
     <div>
+      {contextHolder}
       <div style={{ display: "flex" }}>
         <h1 className="header-event-box">
           <Layers size={24} style={{ marginRight: "10px" }} />
@@ -104,23 +90,29 @@ const Event = () => {
           {events.map((event, index) => (
             <article key={index} className="card__article">
               <img
-                src={`http://localhost:8000/${event.Picture}`} 
-                alt="Review Picture"
+                src={`http://localhost:8000/${event.Picture}`}
+                alt="Event Picture"
                 style={{
                   width: "240px",
                   height: "240px",
                   borderRadius: "1.5rem",
-                  cursor:"pointer",
+                  cursor: "pointer",
                 }}
               />
               <div className="card__data">
                 <span className="card__description">Event Zoo</span>
                 <h2 className="card__title">{event.Title}</h2>
-                <button  className="card__button_Edit">
-                  EDIT 
+                <button
+                  onClick={() => navigate(`/events/edit/${event.ID}`)}
+                  className="card__button_Edit"
+                >
+                  EDIT
                 </button>
-                <button onClick={() => showModal(event)}  className="card__button_Delete">
-                  DELETE 
+               <button
+                  onClick={() => showModal(event)}
+                  className="card__button_Delete"
+                >
+                  DELETE
                 </button>
               </div>
             </article>

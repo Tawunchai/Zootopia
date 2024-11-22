@@ -46,7 +46,7 @@ const CreateAnimalForm: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const onFinish = async (values: any) => {
-    values.ID = animals?.ID; // ตรวจสอบ ID ของสัตว์ที่ต้องการอัปเดต
+    values.ID = animals?.ID; 
   
     const file = fileList.length > 0 ? fileList[0].originFileObj : null;
   
