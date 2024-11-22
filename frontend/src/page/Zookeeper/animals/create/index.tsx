@@ -45,7 +45,7 @@ const CreateAnimalForm: React.FC = () => {
       message.error("Please upload a picture");
       return;
     }
-
+    console.log(values)
     const formData = new FormData();
     formData.append("name", values.name);
     formData.append("description", values.description);

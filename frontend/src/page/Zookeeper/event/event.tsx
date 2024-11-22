@@ -1,12 +1,19 @@
 import { useEffect, useState } from "react";
 import { Layers } from "lucide-react";
-import { Link } from "react-router-dom";
-import { ListEvent } from "../../../services/https";
+import { Link, useNavigate } from "react-router-dom";
+import { ListEvent,DeleteEventByID } from "../../../services/https";
 import { EventsInterface } from "../../../interface/IEvent";
+import { Button, Modal, message } from "antd";
 import "./event.css";
 
 const Event = () => {
   const [events, setEvents] = useState<EventsInterface[]>([]);
+  const [open, setOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [modalText, setModalText] = useState<string>("");
+  const [deleteId, setDeleteId] = useState<number | undefined>();
+  const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -17,6 +24,68 @@ const Event = () => {
       }
     };
     loadEvents();
+  }, []);
+
+  const handleOk = async () => {
+    setConfirmLoading(true);
+    console.log("Attempting to delete animal with ID:", deleteId);
+
+    try {
+      const res = await DeleteEventByID(deleteId);
+      if (res) {
+        setOpen(false);
+        messageApi.open({
+          type: "success",
+          content: "Successfully deleted!",
+        });
+        getAnimals();
+      } else {
+        throw new Error("Delete failed");
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "An error occurred!",
+      });
+    }
+    setConfirmLoading(false);
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
+  const showModal = (val: EventsInterface) => {
+    setModalText(`Are you sure you want to delete "${val.Title}"?`);
+    setDeleteId(val.ID);
+    setOpen(true);
+  };
+
+  const getAnimals = async () => {
+    console.log("Fetching animal data...");
+    try {
+      const res = await ListEvent();
+      console.log("ListAnimal response:", res);
+
+      if (res && res.length > 0) {
+        const processedData = res.map((event: EventsInterface) => ({
+          ID: event.ID,
+          Name: event.Title,
+          Description: event.Description,
+          Picture: event.Picture,
+        }));
+        setEvents(processedData);
+        console.log("Processed Animals Data:", processedData);
+      } else {
+        console.error("No data returned from ListAnimal");
+      }
+    } catch (error) {
+      console.error("Error fetching animal data:", error);
+    }
+  };
+
+  useEffect(() => {
+    getAnimals();
   }, []);
 
   return (
@@ -50,7 +119,7 @@ const Event = () => {
                 <button  className="card__button_Edit">
                   EDIT 
                 </button>
-                <button  className="card__button_Delete">
+                <button onClick={() => showModal(event)}  className="card__button_Delete">
                   DELETE 
                 </button>
               </div>
@@ -58,6 +127,15 @@ const Event = () => {
           ))}
         </div>
       </div>
+      <Modal
+        title="Delete Confirmation"
+        open={open}
+        onOk={handleOk}
+        confirmLoading={confirmLoading}
+        onCancel={handleCancel}
+      >
+        <p>{modalText}</p>
+      </Modal>
     </div>
   );
 };

@@ -292,6 +292,23 @@ export const ListEvent = async (): Promise<EventsInterface[] | false> => {
   }
 };
 
+async function DeleteEventByID(id: Number | undefined) {
+  const requestOptions = {
+    method: "DELETE"
+  };
+
+  let res = await fetch(`${apiUrl}/events/${id}`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+  return res;
+}
+
 //Habitat API
 export const ListHabitat = async (): Promise<HabitatInterface[] | false> => {
   try {
@@ -429,6 +446,7 @@ export const ListAnimal = async (): Promise<AnimalsInterface[] | false> => {
 };
 
 export const CreateAnimal = async (formData: FormData): Promise<any | false> => {
+  console.log("Form Data: ",formData)
   try {
     const response = await axios.post(`${apiUrl}/animals-create`, formData, {
       headers: {
@@ -540,4 +558,5 @@ export {
   DeleteAnimalByID,
   GetAnimalById,
   UpdateAnimal,
+  DeleteEventByID
 };

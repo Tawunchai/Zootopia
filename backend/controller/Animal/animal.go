@@ -71,6 +71,7 @@ func CreateAnimal(c *gin.Context) {
 	animal.Height = height
 
 	animal.Birthplace = c.PostForm("birthplace")
+	
 	birthDayStr := c.PostForm("birthDay")
 	birthDay, err := time.Parse("2006-01-02", birthDayStr) 
 	if err != nil {
