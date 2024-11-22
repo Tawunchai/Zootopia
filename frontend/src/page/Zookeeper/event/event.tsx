@@ -45,11 +45,14 @@ const Event = () => {
                 }}
               />
               <div className="card__data">
-                <span className="card__description">{event.Title}</span>
-                <h2 className="card__title">{event.Description}</h2>
-                <a href="#" className="card__button">
-                  Read More
-                </a>
+                <span className="card__description">Event Zoo</span>
+                <h2 className="card__title">{event.Title}</h2>
+                <button  className="card__button_Edit">
+                  EDIT 
+                </button>
+                <button  className="card__button_Delete">
+                  DELETE 
+                </button>
               </div>
             </article>
           ))}

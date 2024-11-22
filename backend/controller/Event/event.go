@@ -105,3 +105,22 @@ func CreateEvent(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Event created successfully", "data": event})
 }
+
+func DeleteEvent(c *gin.Context) {
+	id := c.Param("id")
+	db := config.DB()
+
+	var event entity.Event
+
+	if err := db.Where("id = ?", id).First(&event).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Animal not found"})
+		return
+	}
+
+	if err := db.Delete(&event).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete event"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "event deleted successfully"})
+}

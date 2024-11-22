@@ -24,7 +24,7 @@ import {
   ListHabitat,
   GetAnimalById,
   UpdateAnimal,
-} from "../../../../services/https"; // นำเข้า service ที่สร้าง
+} from "../../../../services/https"; 
 import { SexsInterface } from "../../../../interface/ISex";
 import { BehavioralInterface } from "../../../../interface/IBehavioral";
 import { BiologicalInterface } from "../../../../interface/IBiological";
@@ -52,7 +52,7 @@ const CreateAnimalForm: React.FC = () => {
   
     console.log('Values to be submitted:', values);
   
-    let res = await UpdateAnimal(values, file); // ส่งค่าไปพร้อมไฟล์ภาพ
+    let res = await UpdateAnimal(values, file); 
   
     if (res) {
       messageApi.open({
@@ -158,65 +158,78 @@ const CreateAnimalForm: React.FC = () => {
 
   return (
     <Card>
-      <h2>Edit Animal</h2>
+       {contextHolder}
+      <h2>Create Animal</h2>
       <Divider />
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Row gutter={[16, 0]}>
-          {/* Image Upload with ImgCrop */}
           <Form.Item
-              label="Upload Picture"
-              name="picture"
-              valuePropName="fileList"
-              rules={[
-                {
-                  required: true,
-                  message: "Please upload a picture",
-                  validator: () => {
-                    return fileList.length > 0
-                      ? Promise.resolve()
-                      : Promise.reject(new Error("Please upload a picture"));
-                  },
+            label="Upload Picture"
+            name="picture"
+            valuePropName="fileList"
+            rules={[
+              {
+                required: true,
+                message: "Please upload a picture",
+                validator: () => {
+                  return fileList.length > 0
+                    ? Promise.resolve()
+                    : Promise.reject(new Error("Please upload a picture"));
                 },
-              ]}
-            >
-              <ImgCrop rotationSlider>
-                <Upload
-                  fileList={fileList}
-                  onChange={onChange}
-                  onPreview={onPreview}
-                  beforeUpload={(file) => {
-                    setFileList([file]);
-                    return false;
-                  }}
-                  maxCount={1}
-                  listType="picture-card"
-                >
-                  {fileList.length < 1 && (
-                    <div>
-                      <PlusOutlined />
-                      <div style={{ marginTop: 8 }}>Upload</div>
-                    </div>
-                  )}
-                </Upload>
-              </ImgCrop>
-            </Form.Item>
+              },
+            ]}
+          >
+            <ImgCrop rotationSlider>
+              <Upload
+                fileList={fileList}
+                onChange={onChange}
+                onPreview={onPreview}
+                beforeUpload={(file) => {
+                  setFileList([file]);
+                  return false;
+                }}
+                maxCount={1}
+                listType="picture-card"
+              >
+                {fileList.length < 1 && (
+                  <div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>Upload</div>
+                  </div>
+                )}
+              </Upload>
+            </ImgCrop>
+          </Form.Item>
 
           <Col xs={24} sm={8} md={8} lg={8}>
             <Form.Item
               label="Name"
               name="Name"
               style={{ width: "460px" }}
-              rules={[{ required: true, message: "Please enter the animal's name" }]}
+              rules={[
+                { required: true, message: "Please enter the animal's name" },
+              ]}
             >
               <Input placeholder="Enter animal name" />
             </Form.Item>
 
             <Row gutter={[16, 16]}>
-              <Col xs={24} sm={12} md={8} lg={8}>
+              <Col
+                xs={24}
+                sm={12}
+                md={8}
+                lg={8}
+                style={{ marginRight: "118px" }}
+              >
                 <Form.Item
                   label="Weight"
                   name="Weight"
-                  rules={[{ required: true, message: "Please enter the animal's weight" }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter the animal's weight",
+                    },
+                  ]}
                 >
                   <InputNumber
                     style={{ width: "210px" }}
@@ -229,7 +242,12 @@ const CreateAnimalForm: React.FC = () => {
                 <Form.Item
                   label="Height"
                   name="Height"
-                  rules={[{ required: true, message: "Please enter the animal's height" }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter the animal's height",
+                    },
+                  ]}
                 >
                   <InputNumber
                     style={{ width: "210px" }}
@@ -246,7 +264,9 @@ const CreateAnimalForm: React.FC = () => {
               label="Description"
               name="Description"
               style={{ marginLeft: "80px", width: "580px" }}
-              rules={[{ required: true, message: "Please enter the description" }]}
+              rules={[
+                { required: true, message: "Please enter the description" },
+              ]}
             >
               <Input.TextArea rows={5} placeholder="Enter animal description" />
             </Form.Item>
@@ -259,7 +279,9 @@ const CreateAnimalForm: React.FC = () => {
             <Form.Item
               label="Birth Date"
               name="BirthDay"
-              rules={[{ required: true, message: "Please select the birth date" }]}
+              rules={[
+                { required: true, message: "Please select the birth date" },
+              ]}
             >
               <DatePicker style={{ width: "100%" }} />
             </Form.Item>
@@ -269,23 +291,43 @@ const CreateAnimalForm: React.FC = () => {
             <Form.Item
               label="Birthplace"
               name="Birthplace"
-              rules={[{ required: true, message: "Please enter the birthplace" }]}
+              rules={[
+                { required: true, message: "Please enter the birthplace" },
+              ]}
             >
               <Input placeholder="Enter animal birthplace" />
             </Form.Item>
           </Col>
-        </Row>
 
-        {/* Select Fields */}
-        <Row gutter={[16, 16]}>
-          <Col xs={24} sm={12} md={8} lg={8}>
-            <Form.Item label="Sex" name="SexID" rules={[{ required: true }]}>
-              <Select
-                placeholder="Select sex"
-                showSearch
-                style={{ width: "100%" }}
-                allowClear
-              >
+          <Col xs={24} sm={12} md={12} lg={12}>
+            <Form.Item
+              label="Health Status"
+              name="Health"
+              rules={[
+                { required: true, message: "Please enter the health status" },
+              ]}
+            >
+              <Input placeholder="Enter health status" />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12} md={12} lg={12}>
+            <Form.Item
+              label="Note"
+              name="Note"
+              rules={[{ required: true, message: "Please enter a note" }]}
+            >
+              <Input placeholder="Enter any additional notes" />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12} md={12} lg={12}>
+            <Form.Item
+              label="Sex ID"
+              name="SexID"
+              rules={[{ required: true, message: "Please select the sex ID" }]}
+            >
+              <Select allowClear>
                 {sexs.map((item) => (
                   <Option key={item.ID} value={item.ID}>
                     {item.Sex}
@@ -295,14 +337,15 @@ const CreateAnimalForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12} md={8} lg={8}>
-            <Form.Item label="Biological" name="BiologicalID" rules={[{ required: true }]}>
-              <Select
-                placeholder="Select biological"
-                showSearch
-                style={{ width: "100%" }}
-                allowClear
-              >
+          <Col xs={24} sm={12} md={12} lg={12}>
+            <Form.Item
+              label="Biological ID"
+              name="BiologicalID"
+              rules={[
+                { required: true, message: "Please select the biological ID" },
+              ]}
+            >
+              <Select allowClear>
                 {biologicals.map((item) => (
                   <Option key={item.ID} value={item.ID}>
                     {item.Biological}
@@ -312,14 +355,15 @@ const CreateAnimalForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12} md={8} lg={8}>
-            <Form.Item label="Behavior" name="BehavioralID" rules={[{ required: true }]}>
-              <Select
-                placeholder="Select behavior"
-                showSearch
-                style={{ width: "100%" }}
-                allowClear
-              >
+          <Col xs={24} sm={12} md={12} lg={12}>
+            <Form.Item
+              label="Behavioral ID"
+              name="BehavioralID"
+              rules={[
+                { required: true, message: "Please select the behavioral ID" },
+              ]}
+            >
+              <Select allowClear>
                 {behaviorals.map((item) => (
                   <Option key={item.ID} value={item.ID}>
                     {item.Behavioral}
@@ -329,14 +373,15 @@ const CreateAnimalForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12} md={8} lg={8}>
-            <Form.Item label="Habitat" name="HabitatID" rules={[{ required: true }]}>
-              <Select
-                placeholder="Select habitat"
-                showSearch
-                style={{ width: "100%" }}
-                allowClear
-              >
+          <Col xs={24} sm={12} md={12} lg={12}>
+            <Form.Item
+              label="Habitat ID"
+              name="HabitatID"
+              rules={[
+                { required: true, message: "Please select the habitat ID" },
+              ]}
+            >
+              <Select allowClear>
                 {habitats.map((item) => (
                   <Option key={item.ID} value={item.ID}>
                     {item.Name}
@@ -347,21 +392,22 @@ const CreateAnimalForm: React.FC = () => {
           </Col>
         </Row>
 
-        <Form.Item label="Health" name="Health">
-          <Input.TextArea rows={3} placeholder="Enter health information" />
-        </Form.Item>
-
-        <Form.Item label="Notes" name="Note">
-          <Input.TextArea rows={3} placeholder="Enter any additional notes" />
-        </Form.Item>
-
-        <Form.Item>
-          <Space style={{ width: "100%" }} direction="vertical">
-            <Button htmlType="submit" type="primary">
-              Submit
-            </Button>
-          </Space>
-        </Form.Item>
+        <Row justify="end">
+          <Col>
+            <Form.Item>
+              <Space>
+                <Button htmlType="button">Cancel</Button>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  icon={<PlusOutlined />}
+                >
+                  Create
+                </Button>
+              </Space>
+            </Form.Item>
+          </Col>
+        </Row>
       </Form>
     </Card>
   );

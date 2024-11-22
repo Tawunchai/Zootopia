@@ -27,6 +27,7 @@ import { SexsInterface } from "../../../../interface/ISex";
 import { BehavioralInterface } from "../../../../interface/IBehavioral";
 import { BiologicalInterface } from "../../../../interface/IBiological";
 import { HabitatInterface } from "../../../../interface/IHabitat";
+import { useNavigate } from "react-router-dom";
 
 const CreateAnimalForm: React.FC = () => {
   const [form] = Form.useForm();
@@ -35,6 +36,7 @@ const CreateAnimalForm: React.FC = () => {
   const [behaviorals, setBehaviorals] = useState<BehavioralInterface[]>([]);
   const [biologicals, setBiologicals] = useState<BiologicalInterface[]>([]);
   const [habitats, setHabitats] = useState<HabitatInterface[]>([]);
+  const navigate = useNavigate();
 
   const { Option } = Select;
 
@@ -66,6 +68,9 @@ const CreateAnimalForm: React.FC = () => {
       message.success("Animal created successfully!");
       form.resetFields();
       setFileList([]);
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     } else {
       message.error("Failed to create animal.");
     }
@@ -129,43 +134,43 @@ const CreateAnimalForm: React.FC = () => {
       <Divider />
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Row gutter={[16, 0]}>
-            <Form.Item
-              label="Upload Picture"
-              name="picture"
-              valuePropName="fileList"
-              rules={[
-                {
-                  required: true,
-                  message: "Please upload a picture",
-                  validator: () => {
-                    return fileList.length > 0
-                      ? Promise.resolve()
-                      : Promise.reject(new Error("Please upload a picture"));
-                  },
+          <Form.Item
+            label="Upload Picture"
+            name="picture"
+            valuePropName="fileList"
+            rules={[
+              {
+                required: true,
+                message: "Please upload a picture",
+                validator: () => {
+                  return fileList.length > 0
+                    ? Promise.resolve()
+                    : Promise.reject(new Error("Please upload a picture"));
                 },
-              ]}
-            >
-              <ImgCrop rotationSlider>
-                <Upload
-                  fileList={fileList}
-                  onChange={onChange}
-                  onPreview={onPreview}
-                  beforeUpload={(file) => {
-                    setFileList([file]);
-                    return false;
-                  }}
-                  maxCount={1}
-                  listType="picture-card"
-                >
-                  {fileList.length < 1 && (
-                    <div>
-                      <PlusOutlined />
-                      <div style={{ marginTop: 8 }}>Upload</div>
-                    </div>
-                  )}
-                </Upload>
-              </ImgCrop>
-            </Form.Item>
+              },
+            ]}
+          >
+            <ImgCrop rotationSlider>
+              <Upload
+                fileList={fileList}
+                onChange={onChange}
+                onPreview={onPreview}
+                beforeUpload={(file) => {
+                  setFileList([file]);
+                  return false;
+                }}
+                maxCount={1}
+                listType="picture-card"
+              >
+                {fileList.length < 1 && (
+                  <div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>Upload</div>
+                  </div>
+                )}
+              </Upload>
+            </ImgCrop>
+          </Form.Item>
 
           <Col xs={24} sm={8} md={8} lg={8}>
             <Form.Item
@@ -180,7 +185,13 @@ const CreateAnimalForm: React.FC = () => {
             </Form.Item>
 
             <Row gutter={[16, 16]}>
-              <Col xs={24} sm={12} md={8} lg={8} style={{marginRight:"118px"}}>
+              <Col
+                xs={24}
+                sm={12}
+                md={8}
+                lg={8}
+                style={{ marginRight: "118px" }}
+              >
                 <Form.Item
                   label="Weight"
                   name="weight"
@@ -223,7 +234,7 @@ const CreateAnimalForm: React.FC = () => {
             <Form.Item
               label="Description"
               name="description"
-              style={{marginLeft:"80px",width:"580px"}}
+              style={{ marginLeft: "80px", width: "580px" }}
               rules={[
                 { required: true, message: "Please enter the description" },
               ]}
@@ -232,7 +243,7 @@ const CreateAnimalForm: React.FC = () => {
             </Form.Item>
           </Col>
         </Row>
-      
+
         {/* Other fields */}
         <Row gutter={[16, 10]}>
           <Col xs={24} sm={12} md={12} lg={12}>
@@ -281,7 +292,6 @@ const CreateAnimalForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          {/* Select fields for Sex, Biological, Behavioral, Habitat */}
           <Col xs={24} sm={12} md={12} lg={12}>
             <Form.Item
               label="Sex ID"
@@ -352,13 +362,17 @@ const CreateAnimalForm: React.FC = () => {
             </Form.Item>
           </Col>
         </Row>
-        
+
         <Row justify="end">
           <Col>
             <Form.Item>
               <Space>
                 <Button htmlType="button">Cancel</Button>
-                <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  icon={<PlusOutlined />}
+                >
                   Create
                 </Button>
               </Space>
