@@ -3,6 +3,7 @@ import { BehavioralInterface} from "./IBehavioral"
 import { BiologicalInterface} from "./IBiological"
 import { HabitatInterface} from "./IHabitat"
 import { EmployeeInterface} from "./IEmployee"
+import { HealthAnimalInterface} from "./IStatusAnimal"
 
 export interface AnimalsInterface {
     ID?: number;
@@ -20,4 +21,5 @@ export interface AnimalsInterface {
     Biological?: BiologicalInterface;
     Habitat?: HabitatInterface;
     Employee?: EmployeeInterface;
+    HealthAnimal?:HealthAnimalInterface
   }

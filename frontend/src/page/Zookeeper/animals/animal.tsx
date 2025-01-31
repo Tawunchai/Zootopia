@@ -1,7 +1,6 @@
-import { PawPrint } from "lucide-react";
+import { PawPrint,BadgePlus,Gitlab ,FilePenLine,Trash2} from "lucide-react";
 import "./animal.css";
-import { Button, Modal, message } from "antd";
-import {EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Button, Modal, message,Image } from "antd";
 import { createTheme, ThemeProvider } from "@mui/material";
 import MUIDataTable from "mui-datatables";
 import { useEffect, useState } from "react";
@@ -9,7 +8,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { ListAnimal, DeleteAnimalByID } from "../../../services/https"; 
 import { AnimalsInterface } from "../../../interface/IAnimal";
 
-// Define selectable rows options
 type SelectableRows = "none" | "single" | "multiple";
 
 const Animal = () => {
@@ -20,8 +18,8 @@ const Animal = () => {
   const [deleteId, setDeleteId] = useState<number | undefined>();
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
+  const [animalCount, setAnimalCount] = useState<number>(0);
 
-  // Define columns for MUIDataTable
   const columns = [
     {
       name: "ID",
@@ -33,9 +31,9 @@ const Animal = () => {
       label: "Profile",
       options: {
         customBodyRender: (value: string) => (
-          <img
-            src={`http://localhost:8000/${value || "default-image.jpg"}`}
-            style={{ width: "100px", borderRadius: "80px" }}
+          <Image
+            src={`http://localhost:8000/${value}`}
+            style={{ width: "150px", height:"130px",borderRadius: "60%" }}
             alt="profile"
           />
         ),
@@ -56,6 +54,53 @@ const Animal = () => {
       name: "Height",
       label: "Height",
       options: { filter: false },
+    },    
+    {
+      name: "habitat",
+      label: "Habitat",
+      options: { filter: false },
+    },
+    {
+      name: "health",
+      label: "Healthy",
+      options: {
+        customBodyRender: (value: any) => (
+          <p
+            style={{
+              backgroundColor: value === "Normal" ? "green" :  value === "Sick" ? "red" : "purple",
+              color: "white",
+              width: "90px",
+              textAlign: "center",
+              borderRadius: "15px",
+              padding: "5px",
+              fontWeight:"bold"
+            }}
+          >
+            {value}
+          </p>
+        ),
+      },
+    },
+    {
+      name: "gender",
+      label: "Gender",
+      options: {
+        customBodyRender: (value: any) => (
+          <p
+            style={{
+              backgroundColor: value === "Male" ? "#3b82f6" : "#ec4899",
+              color: "white",
+              width: "70px",
+              textAlign: "center",
+              borderRadius: "15px",
+              padding: "5px",
+              fontWeight:"bold"
+            }}
+          >
+            {value}
+          </p>
+        ),
+      },
     },
     {
       name: "Manage",
@@ -67,16 +112,16 @@ const Animal = () => {
           return (
             <>
               <Button
-                onClick={() => navigate(`/animals/edit/${record.ID}`)}
+                onClick={() => navigate(`animals/edit/${record.ID}`)}
                 shape="circle"
-                icon={<EditOutlined />}
+                icon={<FilePenLine />}
                 size={"large"}
               />
               <Button
                 onClick={() => showModal(record)}
                 style={{ marginLeft: 10 }}
                 shape="circle"
-                icon={<DeleteOutlined />}
+                icon={<Trash2 />}
                 size={"large"}
                 danger
               />
@@ -103,11 +148,11 @@ const Animal = () => {
         setOpen(false);
         messageApi.open({
           type: "success",
-          content: "Successfully deleted!",
+          content: "ลบข้อมูลสัตว์สำเร็จ",
         });
         getAnimals();
       } else {
-        throw new Error("Delete failed");
+        throw new Error("ลบข้อมูลสัตว์ไม่สำเร็จ");
       }
     } catch (error) {
       messageApi.open({
@@ -135,8 +180,12 @@ const Animal = () => {
           Weight: animal.Weight,
           Height: animal.Height,
           Picture: animal.Picture,
+          gender:animal.Sex?.Sex,
+          habitat:animal.Habitat?.Name,
+          health:animal.HealthAnimal?.Status,
         }));
         setAnimals(processedData);
+        setAnimalCount(res.length); 
         console.log("Processed Animals Data:", processedData);
       } else {
         console.error("No data returned from ListAnimal");
@@ -151,10 +200,10 @@ const Animal = () => {
   }, []);
 
   const options = {
-    selectableRows: "none" as SelectableRows, // Ensuring correct type for selectableRows
+    selectableRows: "none" as SelectableRows,
     filterType: "checkbox" as const,
-    rowsPerPage: 2, // Number of rows per page
-    rowsPerPageOptions: [5, 10, 20, 30], // Options for number of rows per page
+    rowsPerPage: 2, 
+    rowsPerPageOptions: [5, 10, 20, 30], 
   };
 
   const getMuitheme = () =>
@@ -180,42 +229,53 @@ const Animal = () => {
       },
     });
 
-  return (
-    <div className="bg-slate-700 py-10 min-h-screen grid place-items-center">
-      {contextHolder}
-      <div className="w-10/12 max-w-4xl content-container">
-        <div style={{ display: "flex" }}>
-          <h1 className="header-animals-box">
-            <PawPrint size={28} style={{ marginRight: "10px" }} />
-            Animal
-          </h1>
-          <Link to="/create-animal">
-            <h1 className="header-create-animals-box">
-              <PawPrint size={28} style={{ marginRight: "10px" }} />
-              Create Animal
-            </h1>
-          </Link>
+    return animals.length === 0 ? (
+      <div className="bg-slate-700 py-10 min-h-screen grid place-items-center">
+        <div className="text-center text-white">
+          <h1>Not Data Available</h1>
         </div>
-        <ThemeProvider theme={getMuitheme}>
-          <MUIDataTable
-            title={"Animals List"}
-            data={animals}
-            columns={columns}
-            options={options}
-          />
-        </ThemeProvider>
       </div>
-      <Modal
-        title="Delete Confirmation"
-        open={open}
-        onOk={handleOk}
-        confirmLoading={confirmLoading}
-        onCancel={handleCancel}
-      >
-        <p>{modalText}</p>
-      </Modal>
-    </div>
-  );
+    ) : (
+      <div className="bg-slate-700 py-10 min-h-screen grid place-items-center">
+        {contextHolder}
+        <div className="w-10/12 max-w-4xl content-container">
+          <div style={{ display: "flex" }}>
+            <h1 className="header-animals-box">
+              <PawPrint size={28} style={{ marginRight: "10px" }} />
+              Animal
+            </h1>
+            <h1 className="header-population-animals-box">
+              <Gitlab size={28} style={{ marginRight: "10px" }} />
+              Population : {animalCount}
+            </h1>
+            <Link to="/zookeeper/create-animal">
+              <h1 className="header-create-animals-box">
+                <BadgePlus size={20} style={{ marginRight: "10px" }} />
+                Create Animal
+              </h1>
+            </Link>
+          </div>
+          <ThemeProvider theme={getMuitheme}>
+            <MUIDataTable
+              title={"Animals List"}
+              data={animals}
+              columns={columns}
+              options={options}
+            />
+          </ThemeProvider>
+        </div>
+        <Modal
+          title="Delete Confirmation"
+          open={open}
+          onOk={handleOk}
+          confirmLoading={confirmLoading}
+          onCancel={handleCancel}
+        >
+          <p>{modalText}</p>
+        </Modal>
+      </div>
+    );
+    
 };
 
 export default Animal;

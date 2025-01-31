@@ -1,9 +1,15 @@
 .container {
-    width: 500px;
-}
-
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+    justify-content: flex-start;
+    width: 100%; 
+    padding-left: 0; 
+    margin-left: 0;
+  }
+  
 .progress-bar {
-    width: 1500px;
+    width: 600px;
     height: 15px;
     border-radius: 10px;
     background-color: rgba(220, 220, 220, 0.599);
@@ -23,14 +29,15 @@
 .star-rating {
     margin-bottom: 10px;
     display: flex;
-    align-items: center; /* Center vertically */
-    justify-content: flex-start; /* Align to the start (left) */
+    align-items: center; 
+    justify-content: flex-start; 
+    margin-right: "50px";
 }
 
 .stars {
     display: flex;
     align-items: center;
-    margin-left: 20px; /* Space between progress bar and stars */
+    margin-left: 20px; 
 }
 
 .star-text {
@@ -40,6 +47,6 @@
 
 .percentage {
     font-size: 18px;
-    margin-left: 10px; /* Space between stars and percentage */
+    margin-left: 10px; 
     white-space: nowrap;
 }

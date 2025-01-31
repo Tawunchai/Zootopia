@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Form,
   Input,
-  DatePicker,
   Upload,
   Button,
   message,
@@ -10,46 +9,75 @@ import {
   Divider,
   Row,
   Col,
-  Space,  Select,
+  Space,
+  Select,
 } from "antd";
 import ImgCrop from "antd-img-crop";
 import { PlusOutlined } from "@ant-design/icons";
-import { CreateReport,ListAnimal } from "../../../../services/https"; // Import service function
-import { AnimalsInterface } from "../../../../interface/IAnimal"
-
-const { TextArea } = Input;
+import { CreateReport, ListAnimal } from "../../../../services/https";
+import { AnimalsInterface } from "../../../../interface/IAnimal";
+import { useNavigate, Link } from "react-router-dom";
+import dayjs from "dayjs";
 
 const CreateReportForm: React.FC = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
   const [animals, setAnimals] = useState<AnimalsInterface[]>([]);
+  const [employeeid, setEmployeeid] = useState<number>(
+    Number(localStorage.getItem("employeeid")) || 0
+  );
   const { Option } = Select;
+  const navigate = useNavigate();
+  const { TextArea } = Input;
 
   const onFinish = async (values: any) => {
+    const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+    const isValidImages = fileList.every((file) =>
+      validImageTypes.includes(file.type)
+    );
+
+    if (!isValidImages) {
+      message.error("ไม่สามารถสร้างข้อมูลได้ กรุณาอัพโหลดเฉพาะไฟล์รูปภาพ");
+      return;
+    }
+
     if (fileList.length === 0) {
       message.error("Please upload a picture");
       return;
     }
 
     const formData = new FormData();
+    const currentDate = dayjs().format("YYYY-MM-DD");
+
     formData.append("title", values.title);
     formData.append("description", values.description);
-    formData.append("reportDate", values.reportDate.format("YYYY-MM-DD"));
-    formData.append("status", values.status);
-    formData.append("statusVet", values.statusVet);
+    formData.append("reportDate", currentDate);
+    formData.append("statusVet", "pending");
     formData.append("animalID", values.animalID);
-    formData.append("employeeID", "1"); // Set employeeID to 1
+    formData.append("employeeID", employeeid.toString());
     formData.append("picture", fileList[0].originFileObj);
 
-    const response = await CreateReport(formData);
+    try {
+      const response = await CreateReport(formData);
 
-    if (response) {
-      message.success("Report created successfully!");
-      form.resetFields();
-      setFileList([]);
-    } else {
-      message.error("Failed to create report.");
+      if (response) {
+        message.success("เเจ้งข้อมูลสัตว์ป่วยเเก่สัตวเเพทย์สำเร็จ");
+        form.resetFields();
+        setFileList([]);
+        setTimeout(() => {
+          navigate("/zookeeper/report");
+        }, 2000);
+      } else {
+        message.error("เเจ้งข้อมูลสัตว์ป่วยเเก่สัตวเเพทย์ไม่สำเร็จ");
+      }
+    } catch (error) {
+      message.error("เกิดข้อผิดพลาดในการสร้างรายงาน");
+      console.error("Error creating report:", error);
     }
+  };
+
+  const onFinishFailed = () => {
+    message.warning("กรุณากรอกข้อมูลให้ถูกต้องเเละครบถ้วน");
   };
 
   const onChange = ({ fileList: newFileList }: any) => {
@@ -77,28 +105,34 @@ const CreateReportForm: React.FC = () => {
   };
 
   useEffect(() => {
+    setEmployeeid(Number(localStorage.getItem("employeeid")));
     getAnimal();
   }, []);
 
   return (
-    <Card>
-      <h2>Create Report</h2>
+    <Card style={{ margin: 0, padding: "20px", minHeight: "100vh" }}>
+      <h2 className="header-report-box-create">CREATE REPORT</h2>
       <Divider />
-      <Form form={form} layout="vertical" onFinish={onFinish}>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+      >
         <Row gutter={[16, 16]}>
-        <Col xs={24} sm={16} md={16} lg={12}>
+          <Col xs={24} sm={16} md={16} lg={12}>
             <Form.Item
-              label="Upload Picture"
+              label="อัปโหลดรูปภาพ"
               name="picture"
               valuePropName="fileList"
               rules={[
                 {
                   required: true,
-                  message: "Please upload a picture",
+                  message: "กรุณาอัปโหลดรูป",
                   validator: () => {
                     return fileList.length > 0
                       ? Promise.resolve()
-                      : Promise.reject(new Error("Please upload a picture"));
+                      : Promise.reject(new Error("กรุณาอัปโหลดรูป"));
                   },
                 },
               ]}
@@ -109,18 +143,22 @@ const CreateReportForm: React.FC = () => {
                   onChange={onChange}
                   onPreview={onPreview}
                   beforeUpload={(file) => {
-                    setFileList([file]);
-                    return false; // Prevent auto-upload
+                    const isImage = file.type.startsWith("image/");
+                    if (!isImage) {
+                      message.error("กรุณาอัปโหลดไฟล์รูปภาพ");
+                      return Upload.LIST_IGNORE;
+                    }
+                    setFileList([...fileList, file]);
+                    return false;
                   }}
                   maxCount={1}
+                  multiple={false}
                   listType="picture-card"
                 >
-                  {fileList.length < 1 && (
-                    <div>
-                      <PlusOutlined />
-                      <div style={{ marginTop: 8 }}>Upload</div>
-                    </div>
-                  )}
+                  <div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>Upload</div>
+                  </div>
                 </Upload>
               </ImgCrop>
             </Form.Item>
@@ -128,58 +166,31 @@ const CreateReportForm: React.FC = () => {
 
           <Col xs={24} sm={16} md={16} lg={12}>
             <Form.Item
-              label="Title"
+              label="เรื่องที่จะเเจ้ง"
               name="title"
-              rules={[{ required: true, message: "Please enter the title" }]}
+              rules={[
+                { required: true, message: "กรุณากรอกเรื่องที่จะเเจ้ง" },
+                {
+                  max: 99,
+                  message: "กรุณากรอกชื่อกรงสัตว์ไม่เกิน 100 ตัวอักษร",
+                },
+              ]}
             >
               <Input placeholder="Enter report title" />
             </Form.Item>
 
-
             <Form.Item
-              label="Description"
+              label="รายละเอียด"
               name="description"
-              rules={[{ required: true, message: "Please enter the description" }]}
+              rules={[{ required: true, message: "กรุณากรอกรายละเอียด" }]}
             >
               <TextArea rows={4} placeholder="Enter report description" />
             </Form.Item>
-          </Col>
 
-          <Col xs={24} sm={8} md={8} lg={12}>
             <Form.Item
-              label="Report Date"
-              name="reportDate"
-              rules={[{ required: true, message: "Please select the report date" }]}
-            >
-              <DatePicker style={{ width: "100%" }} />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={8} md={8} lg={12}>
-            <Form.Item
-              label="Status"
-              name="status"
-              rules={[{ required: true, message: "Please enter status" }]}
-            >
-              <Input placeholder="Enter status" />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={8} md={8} lg={12}>
-            <Form.Item
-              label="Status of Veterinarian"
-              name="statusVet"
-              rules={[{ required: true, message: "Please enter vet status" }]}
-            >
-              <Input placeholder="Enter vet status" />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={8} md={8} lg={12}>
-            <Form.Item
-              label="Animal ID"
+              label="สัตว์ที่ป่วย"
               name="animalID"
-              rules={[{ required: true, message: "Please enter Animal ID" }]}
+              rules={[{ required: true, message: "กรุณาเลือกสัตวืที่ป่วย" }]}
             >
               <Select allowClear>
                 {animals.map((item) => (
@@ -195,9 +206,16 @@ const CreateReportForm: React.FC = () => {
         <Row justify="end">
           <Col>
             <Space>
-              <Button htmlType="button">Cancel</Button>
-              <Button type="primary" htmlType="submit">
-                Create Report
+              <Link to={"/zookeeper/report"}>
+                <Button htmlType="button">Cancel</Button>
+              </Link>
+              <Button
+                type="primary"
+                htmlType="submit"
+                style={{ backgroundColor: "orange" }}
+                icon={<PlusOutlined />}
+              >
+                CREATE
               </Button>
             </Space>
           </Col>

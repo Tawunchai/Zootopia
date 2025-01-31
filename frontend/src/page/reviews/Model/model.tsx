@@ -16,11 +16,12 @@ import {
   Select,
   Card,
   Image,
+  Divider,
 } from "antd";
 import AverageStar from "../../../feature/averagestar";
 import Like from "../../../feature/like";
 import "./model.css";
-import NoReview from "../../../assets/no review.jpg";
+import Noprofile from "../../../assets/no review.jpg";
 
 const { Option } = Select;
 
@@ -39,6 +40,7 @@ const Modal: React.FC<ReviewModalProps> = ({ isVisible, handleCancel }) => {
   const [averageRating, setAverageRating] = useState<number>(0);
   const [totalReviews, setTotalReviews] = useState<number>(0);
   const [expandedReviewIds, setExpandedReviewIds] = useState<number[]>([]);
+  const [uid, setUid] = useState<number>(Number(localStorage.getItem("userid")) || 0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,6 +100,7 @@ const Modal: React.FC<ReviewModalProps> = ({ isVisible, handleCancel }) => {
   }, []);
 
   useEffect(() => {
+    setUid(Number(localStorage.getItem("userid")));
     setExpandedReviewIds([]);
   }, [isVisible]);
 
@@ -125,7 +128,7 @@ const Modal: React.FC<ReviewModalProps> = ({ isVisible, handleCancel }) => {
       }
 
       if (starLevel !== "All") {
-        const filteredByStars = await GetFilteredReviews(starLevel); // ตรวจสอบว่าค่าที่ส่งไปถูกต้อง
+        const filteredByStars = await GetFilteredReviews(starLevel); 
         if (filteredByStars && filteredByStars.length > 0) {
           filtered = filtered.filter((review) =>
             filteredByStars.some((starReview) => starReview.ID === review.ID)
@@ -173,27 +176,52 @@ const Modal: React.FC<ReviewModalProps> = ({ isVisible, handleCancel }) => {
     if (!review.Comment) return null;
     const isExpanded = expandedReviewIds.includes(review.ID ?? 0);
     const comment = review.Comment;
-
+  
     if (comment.length > 300 && !isExpanded) {
       return (
-        <p>
+        <span>
           <span
             dangerouslySetInnerHTML={{
-              __html: comment.substring(0, 300) + "...",
+              __html: comment.substring(0, 300),
             }}
           />
           <span
             onClick={() => toggleShowMore(review.ID ?? 0)}
-            style={{ color: "#3D3D3D", cursor: "pointer" }}
+            style={{
+              color: "#007BFF",
+              cursor: "pointer",
+              fontWeight: "bold",
+              marginLeft: "5px",
+            }}
           >
-            {" "}
-            Show more
+            ...Show more
           </span>
-        </p>
+        </span>
       );
     }
-
-    return <p>{comment}</p>;
+  
+    return (
+      <span>
+        <span
+          dangerouslySetInnerHTML={{
+            __html: comment,
+          }}
+        />
+        {comment.length > 300 && (
+          <span
+            onClick={() => toggleShowMore(review.ID ?? 0)}
+            style={{
+              color: "#007BFF",
+              cursor: "pointer",
+              fontWeight: "bold",
+              marginLeft: "5px",
+            }}
+          >
+            Show less
+          </span>
+        )}
+      </span>
+    );
   };
 
   return (
@@ -270,57 +298,77 @@ const Modal: React.FC<ReviewModalProps> = ({ isVisible, handleCancel }) => {
         </Col>
       </Row>
 
-      {filteredReviews &&
-      Array.isArray(filteredReviews) &&
-      filteredReviews.length > 0 ? (
-        filteredReviews.map((review) => (
-          <div key={review.ID}>
-            <Card style={{ marginBottom: "20px" }}>
-              <div className="review-header">
-                <Image
-                  className="user-image"
-                  src={userProfiles[review.UserID ?? 0] || NoReview}
-                  alt="Profile"
-                  width={50}
-                  height={50}
-                  style={{ objectFit: "cover" }}
-                />
-                <span>{userNames[review.UserID ?? 0]}</span>
-                {renderStars(review.Rating)}
-                <div>{formatDate(review.ReviewDate)}</div>
-              </div>
-              {renderComment(review)}
-              <div>
-                <Image
-                  src={`http://localhost:8000/${review.Picture}`} // แปลง path เป็น URL เต็ม
-                  alt="Review Picture"
-                  width={200}
-                  height={150}
-                  style={{ objectFit: "cover", borderRadius: "8px" }}
-                />
-              </div>
+      <Row gutter={16} align="top">
+        <Col span={24}>
+          <Card>
+            <div className="review-list-container">
+              {filteredReviews &&
+              Array.isArray(filteredReviews) &&
+              filteredReviews.length > 0 ? (
+                filteredReviews.map((review) => (
+                  <div key={review.ID}>
+                    <div className="review-container">
+                      <Image
+                        className="review-profile-img"
+                        src={`http://localhost:8000/${userProfiles[review.UserID ?? 0]}` || Noprofile}
+                        alt="Profile"
+                        width={80}
+                        height={40}
+                        style={{ objectFit: "cover" }}
+                      />
+                      <div className="reviews-comment-text">
+                        <p style={{ fontWeight: "bold" }}>
+                          {userNames[review.UserID ?? 0]}
+                        </p>
+                        <p>
+                          Rating: {renderStars(review.Rating ?? 0)}
+                          <span className="date-review">
+                            {formatDate(review.ReviewDate)}
+                          </span>
+                        </p>
 
-              <Like reviewID={review.ID ?? 0} userID={1} />
-            </Card>
-          </div>
-        ))
-      ) : (
-        <center>
-          <div
-            style={{
-              color: "rgb(99, 94, 94)",
-              fontSize: "28px",
-              fontFamily: "revert-layer",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <p>No Reviews for Course</p>
-            <img src={NoReview} alt="No reviews" style={{ width: "180px" }} />
-          </div>
-        </center>
-      )}
+                        <p className="comment-reviews-render">{renderComment(review)}</p>
+                        {review.Picture ? (
+                          <Image
+                            src={`http://localhost:8000/${review.Picture}`}
+                            alt="Review Picture"
+                            width={90}
+                            height={70}
+                            style={{ objectFit: "cover", borderRadius: "8px" }}
+                          />
+                        ) : null}
+                      </div>
+                    </div>
+                    <br />
+                    <Like reviewID={review.ID ?? 0} userID={uid} />
+                    <Divider />
+                  </div>
+                ))
+              ) : (
+                <center>
+                  <div
+                    style={{
+                      color: "rgb(99, 94, 94)",
+                      fontSize: "28px",
+                      fontFamily: "revert-layer",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <p>No Reviews for Zoo</p>
+                    <img
+                      src={Noprofile}
+                      alt="No reviews"
+                      style={{ width: "180px" }}
+                    />
+                  </div>
+                </center>
+              )}
+            </div>
+          </Card>
+        </Col>
+      </Row>
     </AntModal>
   );
 };

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Layers } from "lucide-react";
+import { Layers, SquareChartGantt, SquarePlus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { ListEvent, DeleteEventByID } from "../../../services/https";
 import { EventsInterface } from "../../../interface/IEvent";
-import {  Modal, message } from "antd";
+import { Modal, message } from "antd";
 import "./event.css";
 
 const Event = () => {
@@ -14,13 +14,14 @@ const Event = () => {
   const [deleteId, setDeleteId] = useState<number | undefined>();
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
+  const [eventCount, setEvent] = useState<number>(0);
 
-  // Function to fetch events from the server
   const getEvents = async () => {
     try {
       const data = await ListEvent();
       if (data) {
         setEvents(data);
+        setEvent(data.length);
       } else {
         console.error("No data returned from ListEvent");
       }
@@ -29,12 +30,10 @@ const Event = () => {
     }
   };
 
-  // Fetch events on component mount
   useEffect(() => {
     getEvents();
   }, []);
 
-  // Handle modal OK (delete confirmation)
   const handleOk = async () => {
     setConfirmLoading(true);
     console.log("Attempting to delete event with ID:", deleteId);
@@ -45,12 +44,11 @@ const Event = () => {
         setOpen(false);
         messageApi.open({
           type: "success",
-          content: "Successfully deleted!",
+          content: "ลบข้อมูลอีเว้นสำเร็จ",
         });
-        // Refresh the events list
         await getEvents();
       } else {
-        throw new Error("Delete failed");
+        throw new Error("ลบข้อมูลอีเว้นไม่สำเร็จ");
       }
     } catch (error) {
       messageApi.open({
@@ -61,12 +59,10 @@ const Event = () => {
     setConfirmLoading(false);
   };
 
-  // Handle modal cancel
   const handleCancel = () => {
     setOpen(false);
   };
 
-  // Show delete confirmation modal
   const showModal = (event: EventsInterface) => {
     setModalText(`Are you sure you want to delete "${event.Title}"?`);
     setDeleteId(event.ID);
@@ -74,50 +70,71 @@ const Event = () => {
   };
 
   return (
-    <div>
+    <div style={{ margin: 0, padding: 0,marginBottom:"100px" }}>
       {contextHolder}
-      <div style={{ display: "flex" }}>
-        <h1 className="header-event-box">
-          <Layers size={24} style={{ marginRight: "10px" }} />
-          Event
-        </h1>
-        <Link to="/create-event">
-          <h1 className="header-event-box">Create Event</h1>
-        </Link>
-      </div>
-      <div className="container">
-        <div className="card__container">
-          {events.map((event, index) => (
-            <article key={index} className="card__article">
-              <img
-                src={`http://localhost:8000/${event.Picture}`}
-                alt="Event Picture"
-                style={{
-                  width: "240px",
-                  height: "240px",
-                  borderRadius: "1.5rem",
-                  cursor: "pointer",
-                }}
-              />
-              <div className="card__data">
-                <span className="card__description">Event Zoo</span>
-                <h2 className="card__title">{event.Title}</h2>
-                <button
-                  onClick={() => navigate(`/events/edit/${event.ID}`)}
-                  className="card__button_Edit"
-                >
-                  EDIT
-                </button>
-               <button
-                  onClick={() => showModal(event)}
-                  className="card__button_Delete"
-                >
-                  DELETE
-                </button>
-              </div>
-            </article>
-          ))}
+      {events.length === 0 ? (
+        <div></div>
+      ) : (
+        <div style={{ display: "flex", width: "97%",margin:0 }}>
+          <h1 className="header-event-box">
+            <Layers size={24} style={{ marginRight: "10px"}} />
+            Event
+          </h1>
+          <h1 className="header-eventcount-animals-box">
+            <SquareChartGantt size={28} style={{ marginRight: "10px" }} />
+            Total Event : {eventCount}
+          </h1>
+          <Link to="/zookeeper/create-event">
+            <h1 className="header-create-event-box">
+              <SquarePlus size={28} style={{ marginRight: "10px" }} />
+              Create Event
+            </h1>
+          </Link>
         </div>
+      )}
+      <div className="container">
+        {events.length === 0 ? (
+          <div className="no-data-message">
+            <h1>No Data Available</h1>
+          </div>
+        ) : (
+          <div className="card__container">
+            {events.map((event, index) => (
+              <article key={index} className="card__article">
+                <img
+                  src={`http://localhost:8000/${event.Picture}`}
+                  alt="Event Picture"
+                  style={{
+                    width: "240px",
+                    height: "210px",
+                    borderRadius: "1.5rem",
+                    cursor: "pointer",
+                  }}
+                />
+                <div className="card__data">
+                  <span className="card__description">Event Zoo</span>
+                  <h2 className="card__title">
+                    {event.Title && event.Title.length > 30
+                      ? `${event.Title.substring(0, 30)}...`
+                      : event.Title || "Untitled"}
+                  </h2>
+                  <button
+                    onClick={() => navigate(`/zookeeper/events/edit/${event.ID}`)}
+                    className="card__button_Edit"
+                  >
+                    EDIT
+                  </button>
+                  <button
+                    onClick={() => showModal(event)}
+                    className="card__button_Delete"
+                  >
+                    DELETE
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
       <Modal
         title="Delete Confirmation"
@@ -129,7 +146,7 @@ const Event = () => {
         <p>{modalText}</p>
       </Modal>
     </div>
-  );
+  );  
 };
 
 export default Event;

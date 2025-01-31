@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Tawunchai/Zootopia/config"
-	"github.com/Tawunchai/Zootopia/entity"
 	"github.com/gin-gonic/gin"
+	"github.com/sut67/team18/config"
+	"github.com/sut67/team18/entity"
 )
 
 func ListEvent(c *gin.Context) {
@@ -29,29 +29,31 @@ func CreateEvent(c *gin.Context) {
 	var event entity.Event
 	db := config.DB()
 
-	// รับรูปภาพจากฟอร์ม
 	image, err := c.FormFile("picture")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// สร้างโฟลเดอร์สำหรับเก็บรูปภาพ (ถ้ายังไม่มี)
 	uploadDir := "uploads"
 	if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create upload directory"})
 		return
 	}
 
-	// บันทึกไฟล์รูปภาพ
 	filePath := filepath.Join(uploadDir, image.Filename)
 	if err := c.SaveUploadedFile(image, filePath); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// รับข้อมูลจากฟอร์ม
 	event.Title = c.PostForm("title")
+
+	if len(event.Title) < 1 || len(event.Title) > 100 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Title must be between 1 and 100 characters"})
+		return
+	}
+
 	event.Description = c.PostForm("description")
 
 	startDateStr := c.PostForm("startDate")
@@ -60,6 +62,7 @@ func CreateEvent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid start date format"})
 		return
 	}
+
 	event.StartDate = startDate
 
 	endDateStr := c.PostForm("endDate")
@@ -68,18 +71,28 @@ func CreateEvent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid end date format"})
 		return
 	}
+
 	event.EndDate = endDate
 
-	// เก็บ path รูปภาพ
+	if event.StartDate.After(event.EndDate) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "EndDate should be after StartDate"})
+		return
+	}
+
 	event.Picture = filePath
 
-	// รับ ZoneID, AnimalID, EmployeeID
 	zoneIDStr := c.PostForm("zoneID")
+	if zoneIDStr == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ZoneID is required"})
+		return
+	}
+
 	zoneID, err := strconv.ParseUint(zoneIDStr, 10, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid zone ID"})
 		return
 	}
+
 	event.ZoneID = uint(zoneID)
 
 	animalIDStr := c.PostForm("animalID")
@@ -98,7 +111,6 @@ func CreateEvent(c *gin.Context) {
 	}
 	event.EmployeeID = uint(employeeID)
 
-	// บันทึกข้อมูลในฐานข้อมูล
 	if err := db.Create(&event).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -141,54 +153,113 @@ func GetEventById(c *gin.Context) {
 }
 
 func UpdateEvent(c *gin.Context) {
-    var event entity.Event
-    db := config.DB()
+	var event entity.Event
+	db := config.DB()
 
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing event ID"})
+		return
+	}
 
-    id := c.Param("id")
-    if id == "" {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Missing animal ID"})
-        return
-    }
+	if err := db.Where("id = ?", id).First(&event).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		return
+	}
 
+	if err := c.Request.ParseMultipartForm(32 << 20); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse form"})
+		return
+	}
 
-    if err := db.Where("id = ?", id).First(&event).Error; err != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Animal not found"})
-        return
-    }
+	event.Title = c.PostForm("title")
+	event.Description = c.PostForm("description")
 
+	if startDateStr := c.PostForm("startDate"); startDateStr != "" {
+		parsedStartDate, err := time.Parse("2006-01-02", startDateStr)
+		if err == nil {
+			event.StartDate = parsedStartDate
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid start date format: %v", err)})
+			return
+		}
+	}
 
-    if err := c.Request.ParseMultipartForm(32 << 20); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse form"})
-        return
-    }
+	if endDateStr := c.PostForm("endDate"); endDateStr != "" {
+		parsedEndDate, err := time.Parse("2006-01-02", endDateStr)
+		if err == nil {
+			event.EndDate = parsedEndDate
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid end date format: %v", err)})
+			return
+		}
+	}
 
+	file, err := c.FormFile("Picture")
+	if err == nil && file != nil {
+		uploadDir := "uploads"
+		if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create upload directory"})
+			return
+		}
 
-    event.Title = c.PostForm("title")
-    event.Description = c.PostForm("description")
+		filePath := filepath.Join(uploadDir, file.Filename)
+		if err := c.SaveUploadedFile(file, filePath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
+			return
+		}
 
-    file, err := c.FormFile("Picture")
-    if err == nil && file != nil {
-        uploadDir := "uploads"
-        if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create upload directory"})
-            return
-        }
+		event.Picture = filePath
+	}
 
-        filePath := filepath.Join(uploadDir, file.Filename)
-        if err := c.SaveUploadedFile(file, filePath); err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
-            return
-        }
+	if zoneIDStr := c.PostForm("zoneID"); zoneIDStr != "" {
+		zoneID, err := strconv.ParseUint(zoneIDStr, 10, 32)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ZoneID"})
+			return
+		}
+		event.ZoneID = uint(zoneID)
+	}
 
-        event.Picture = filePath
-    }
+	if animalIDStr := c.PostForm("animalID"); animalIDStr != "" {
+		animalID, err := strconv.ParseUint(animalIDStr, 10, 32)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid AnimalID"})
+			return
+		}
+		event.AnimalID = uint(animalID)
+	}
 
-    if err := db.Save(&event).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to update animal: %v", err)})
-        return
-    }
+	if employeeIDStr := c.PostForm("EmployeeID"); employeeIDStr != "" {
+		employeeID, err := strconv.ParseUint(employeeIDStr, 10, 32)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid EmployeeID"})
+			return
+		}
+		event.EmployeeID = uint(employeeID)
+	}
 
-    c.JSON(http.StatusOK, gin.H{"message": "Animal updated successfully", "data": event})
+	if err := db.Save(&event).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to update event: %v", err)})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Event updated successfully", "data": event})
 }
 
+func GetUpcomingEvents(c *gin.Context) {
+	today := time.Now()
+
+	var events []entity.Event
+	db := config.DB()
+
+	results := db.Preload("Zone").Preload("Animal").Preload("Employee").
+		Where("end_date > ?", today).Find(&events)
+
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, events)
+}

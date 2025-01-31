@@ -6,7 +6,7 @@
     margin-bottom: 40px;
     font-size: 28px;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    width: 200px;
+    width: 180px;
     align-items: center;
     display: flex;
     justify-content: center;
@@ -22,9 +22,10 @@
     margin-left: 20px;
     margin-top: 20px;
     margin-bottom: 40px;
-    font-size: 28px;
+    font-size: 14px;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    width: 300px;
+    width: 150px;
+    height: 35px;
     align-items: center;
     display: flex;
     justify-content: center;
@@ -34,11 +35,62 @@
     border-color: rgb(255, 183, 15);
 }
 
+.header-population-animals-box{
+  color: rgb(255, 255, 255);
+  background-color: rgb(255, 183, 15);
+  margin-left: 20px;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  font-size: 28px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  width: 260px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border-radius: 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgb(255, 183, 15);
+  margin-right: auto;
+}
+
+.header-animals-box-create{
+  color: rgb(255, 255, 255);
+  background-color: rgb(255, 183, 15);
+  margin-bottom: 10px;
+  font-size: 28px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  width: 250px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border-radius: 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgb(255, 183, 15);
+}
+
+.header-animals-box-edit{
+  color: rgb(255, 255, 255);
+  background-color: rgb(255, 183, 15);
+  margin-bottom: 10px;
+  font-size: 28px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  width: 230px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border-radius: 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgb(255, 183, 15);
+}
+
 .bg-slate-700 {
     min-height: 100vh;
     display: grid;
     place-items: center;
-    padding: 10px 0; /* Keep existing padding */
+    padding: 10px 0; 
   }
   
   .content-container {

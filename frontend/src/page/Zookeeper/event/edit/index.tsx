@@ -7,20 +7,26 @@ import {
   message,
   Upload,
   Card,
-  Divider,
   Row,
   Col,
   Space,
   Select,
 } from "antd";
+import { Pencil } from "lucide-react";
 import ImgCrop from "antd-img-crop";
 import { PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { GetEventById, UpdateEvent, ListAnimal, GetZones } from "../../../../services/https";
+import {
+  GetEventById,
+  UpdateEvent,
+  ListAnimal,
+  GetZones,
+} from "../../../../services/https";
 import { ZoneInterface } from "../../../../interface/IZone";
 import { AnimalsInterface } from "../../../../interface/IAnimal";
 import { EventsInterface } from "../../../../interface/IEvent";
 import { useNavigate, useParams } from "react-router-dom";
+import "../event.css";
 
 const { TextArea } = Input;
 
@@ -30,42 +36,68 @@ const EditEventForm: React.FC = () => {
   const [zones, setZones] = useState<ZoneInterface[]>([]);
   const [animals, setAnimals] = useState<AnimalsInterface[]>([]);
   const [events, setEvents] = useState<EventsInterface | null>(null);
+  const [employeeid, setEmployeeid] = useState<number>(
+    Number(localStorage.getItem("employeeid")) || 0
+  );
   const navigate = useNavigate();
   let { id } = useParams();
   const [messageApi, contextHolder] = message.useMessage();
   const { Option } = Select;
 
   const onFinish = async (values: any) => {
-    values.ID = events?.ID; 
-  
+    values.ID = events?.ID;
+    values.EmployeeID = employeeid;
+    if (values.startDate) {
+      values.startDate = dayjs(values.startDate).format("YYYY-MM-DD");
+    }
+    if (values.endDate) {
+      values.endDate = dayjs(values.endDate).format("YYYY-MM-DD");
+    }
+
+    if (values.title > 100) {
+      message.error("ชื่ออีเว้นต้องไม่เกิน 100 ตัวอักษร");
+      return;
+    }
+
+    console.log(1)
+
     const file = fileList.length > 0 ? fileList[0].originFileObj : null;
-  
-    console.log('Values to be submitted:', values);
-  
-    let res = await UpdateEvent(values, file); 
-  
+
+    const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+
+    if (file && !validImageTypes.includes(file.type)) {
+      message.error("ไม่สามารถสร้างข้อมูลได้ กรุณาอัพโหลดเฉพาะไฟล์รูปภาพ");
+      return;
+    }
+
+    console.log("Values to be submitted:", values);
+
+    let res = await UpdateEvent(values, file);
+
     if (res) {
       messageApi.open({
         type: "success",
-        content: res.message,
+        content: "เเก้ไขข้อมูลอีเว้นสำเร็จ",
       });
       setTimeout(() => {
-        navigate("/");
+        navigate("/zookeeper/event");
       }, 2000);
     } else {
       messageApi.open({
         type: "error",
-        content: "Failed to update animal data",
+        content: "เเก้ไขข้อมูลอีเว้นไม่สำเร็จ",
       });
     }
   };
 
-  // Handle file upload change
+  const onFinishFailed = () => {
+    message.warning("กรุณากรอกข้อมูลอีเว้นให้ถูกต้องเเละครบถ้วน");
+  };
+
   const onChange = ({ fileList: newFileList }: any) => {
     setFileList(newFileList);
   };
 
-  // Preview image before upload
   const onPreview = async (file: any) => {
     let src = file.url;
     if (!src) {
@@ -79,19 +111,16 @@ const EditEventForm: React.FC = () => {
     imgWindow?.document.write(`<img src="${src}" style="max-width: 100%;" />`);
   };
 
-  // Fetch zones
   const fetchZones = async () => {
     const res = await GetZones();
     if (res) setZones(res);
   };
 
-  // Fetch animals
   const fetchAnimals = async () => {
     const res = await ListAnimal();
     if (res) setAnimals(res);
   };
 
-  // Fetch event data by ID
   const fetchEventById = async () => {
     const res = await GetEventById(Number(id));
     if (res) {
@@ -118,70 +147,106 @@ const EditEventForm: React.FC = () => {
     }
   };
 
-  // Run on mount
   useEffect(() => {
+    setEmployeeid(Number(localStorage.getItem("employeeid")));
     fetchZones();
     fetchAnimals();
     fetchEventById();
   }, []);
 
   return (
-    <Card>
+    <Card style={{ margin: 0, padding: "10px", minHeight: "100vh" }}>
       {contextHolder}
-      <h2>Edit Event</h2>
-      <Divider />
-      <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Row gutter={[16, 16]}>
+      <h2 className="header-event-box-edit">EDIT EVENT</h2>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+      >
+        <Row gutter={[16, 0]}>
           <Col span={24}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              <Form.Item
+                label="อัปโหลดรูปภาพ"
+                name="picture"
+                rules={[
+                  {
+                    required: true,
+                    message: "กรุณาอัปโหลดรูป",
+                    validator: () =>
+                      fileList.length > 0
+                        ? Promise.resolve()
+                        : Promise.reject(new Error("กรุณาอัปโหลดรูป")),
+                  },
+                ]}
+              >
+                <ImgCrop rotationSlider>
+                  <Upload
+                    fileList={fileList}
+                    onChange={onChange}
+                    onPreview={onPreview}
+                    beforeUpload={(file) => {
+                      const isImage = file.type.startsWith("image/");
+                      const isLt2M = file.size / 1024 / 1024 < 2;
+
+                      if (!isImage) {
+                        message.error("กรุณาอัปโหลดไฟล์รูปภาพที่ถูกต้อง");
+                        return Upload.LIST_IGNORE;
+                      }
+
+                      if (!isLt2M) {
+                        message.error("ไฟล์รูปภาพต้องมีขนาดไม่เกิน 2MB");
+                        return Upload.LIST_IGNORE;
+                      }
+
+                      setFileList([file]);
+                      return false;
+                    }}
+                    maxCount={1}
+                    multiple={false}
+                    listType="picture-card"
+                  >
+                    {fileList.length < 1 && (
+                      <div>
+                        <PlusOutlined />
+                        <div style={{ marginTop: 8 }}>Upload</div>
+                      </div>
+                    )}
+                  </Upload>
+                </ImgCrop>
+              </Form.Item>
+            </div>
+          </Col>
+
+          <Col span={12}>
             <Form.Item
-              label="Upload Picture"
-              name="picture"
+              label="ชื่องานอีเว้น"
+              name="title"
               rules={[
+                { required: true, message: "กรุณากรอกชื่องานอีเว้น" },
                 {
-                  required: true,
-                  message: "Please upload a picture",
-                  validator: () =>
-                    fileList.length > 0
-                      ? Promise.resolve()
-                      : Promise.reject(new Error("Please upload a picture")),
+                  max: 99,
+                  message: "กรุณากรอกชื่ออีเว้นไม่เกิน 100 ตัวอักษร",
                 },
               ]}
             >
-              <ImgCrop rotationSlider>
-                <Upload
-                  fileList={fileList}
-                  onChange={onChange}
-                  onPreview={onPreview}
-                  beforeUpload={() => false}
-                  maxCount={1}
-                  listType="picture-card"
-                >
-                  {fileList.length < 1 && (
-                    <div>
-                      <PlusOutlined />
-                      <div style={{ marginTop: 8 }}>Upload</div>
-                    </div>
-                  )}
-                </Upload>
-              </ImgCrop>
+              <Input placeholder="Enter event title" maxLength={100} />
             </Form.Item>
           </Col>
 
           <Col span={12}>
             <Form.Item
-              label="Title"
-              name="title"
-              rules={[{ required: true, message: "Please enter the title" }]}
-            >
-              <Input placeholder="Enter event title" />
-            </Form.Item>
-          </Col>
-
-          <Col span={12}>
-            <Form.Item
-              label="Description"
+              label="รายละเอียด"
               name="description"
-              rules={[{ required: true, message: "Please enter the description" }]}
+              rules={[{ required: true, message: "กรุณากรอกรายละเอียด" }]}
             >
               <TextArea rows={4} placeholder="Enter event description" />
             </Form.Item>
@@ -189,18 +254,36 @@ const EditEventForm: React.FC = () => {
 
           <Col span={12}>
             <Form.Item
-              label="Start Date"
+              label="วันเริ่มงานอีเว้น"
               name="startDate"
-              rules={[{ required: true, message: "Please select the start date" }]}
+              rules={[
+                { required: true, message: "กรุณาเลือกวันเริ่มงานอีเว้น" },
+              ]}
             >
               <DatePicker style={{ width: "100%" }} />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item
-              label="End Date"
+              label="สิ้นสุดงานอีเว้น"
               name="endDate"
-              rules={[{ required: true, message: "Please select the end date" }]}
+              dependencies={["startDate"]}
+              rules={[
+                { required: true, message: "กรุณาเลือกวันสิ้นสุดงานอีเว้น" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const startDate = getFieldValue("startDate");
+                    if (!value || !startDate || value.isAfter(startDate)) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error(
+                        "กรุณาเลือกวันสิ้นสุดงานอีเว้นที่มากกว่าวันเริ่มงานอีเว้น"
+                      )
+                    );
+                  },
+                }),
+              ]}
             >
               <DatePicker style={{ width: "100%" }} />
             </Form.Item>
@@ -208,9 +291,9 @@ const EditEventForm: React.FC = () => {
 
           <Col span={12}>
             <Form.Item
-              label="Zone"
+              label="โซน"
               name="zoneID"
-              rules={[{ required: true, message: "Please select a zone" }]}
+              rules={[{ required: true, message: "กรุณาเลือกโซนจัดงานอีเว้น" }]}
             >
               <Select allowClear>
                 {zones.map((zone) => (
@@ -223,9 +306,14 @@ const EditEventForm: React.FC = () => {
           </Col>
           <Col span={12}>
             <Form.Item
-              label="Animal"
+              label="สัตว์"
               name="animalID"
-              rules={[{ required: true, message: "Please select an animal" }]}
+              rules={[
+                {
+                  required: true,
+                  message: "กรุณาเลือกสัตว์ที่เกี่ยวข้องกับงานอีเว้น",
+                },
+              ]}
             >
               <Select allowClear>
                 {animals.map((animal) => (
@@ -238,16 +326,28 @@ const EditEventForm: React.FC = () => {
           </Col>
         </Row>
 
-        <Form.Item>
-          <Space>
-            <Button type="primary" htmlType="submit">
-              Save Changes
-            </Button>
-            <Button onClick={() => navigate("/")} type="default">
-              Cancel
-            </Button>
-          </Space>
-        </Form.Item>
+        <Row justify="end">
+          <Col>
+            <Form.Item>
+              <Space>
+                <Button
+                  onClick={() => navigate("/zookeeper/event")}
+                  type="default"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ backgroundColor: "orange" }}
+                  icon={<Pencil style={{ width: "18px" }} />}
+                >
+                  SAVE
+                </Button>
+              </Space>
+            </Form.Item>
+          </Col>
+        </Row>
       </Form>
     </Card>
   );

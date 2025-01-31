@@ -8,7 +8,6 @@
 .reviews-readmore{
     margin-top: 40px;
     font-size: 12px;
-    color: rgb(92, 90, 90);
     font-weight: bold;
     width: 200px;
     height: 30px;
@@ -22,13 +21,6 @@
     margin-left: auto;
     margin-right: auto; 
     cursor: pointer;
-}
-.reviews-readmore:hover{
-    background-color: #a29e9e;
-    color: white;
-    border-color: rgb(255, 255, 255);
-    border-width: 2px;
-    border-style: solid;
 }
 
 .ant-modal {
@@ -114,8 +106,7 @@
 .review-profile-img {
     width: 50px;
     height: 50px;
-    border-radius: 50%; /* Circular profile image */
-    object-fit: cover;
+    border-radius: 50%;
 }
 
 .date-review {
@@ -138,17 +129,17 @@
   }
 
 .star-container {
-    display: flex; /* จัดเรียงเป็นแถว */
-    gap: 1px; /* ระยะห่างระหว่างดาว */
+    display: flex; 
+    gap: 1px; 
     align-items: center;
 
 }
 
 .rating-stars {
-    display: inline-flex; /* ทำให้ดาวเรียงต่อกันในแถวเดียว */
-    margin-left: 5px; /* เพิ่มช่องว่างระหว่างคำว่า "Rating:" และดาว */
-    gap: 3px; /* ระยะห่างระหว่างแต่ละดาว */
-    vertical-align: middle; /* ทำให้ดาวอยู่แนวเดียวกับข้อความ */
+    display: inline-flex; 
+    margin-left: 5px; 
+    gap: 3px; 
+    vertical-align: middle; 
 }
 
 .reviews-grid {

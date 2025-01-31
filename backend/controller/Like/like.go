@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/Tawunchai/Zootopia/config"
-	"github.com/Tawunchai/Zootopia/entity"
 	"github.com/gin-gonic/gin"
+	"github.com/sut67/team18/config"
+	"github.com/sut67/team18/entity"
 	"gorm.io/gorm"
 )
 
@@ -97,4 +97,3 @@ func UnlikeReview(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "ยกเลิก Like รีวิวเรียบร้อย", "likeCount": likeCount})
 }
-

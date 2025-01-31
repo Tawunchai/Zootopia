@@ -1,38 +1,17 @@
-.header-event-box{
-    color: rgb(255, 255, 255);
-    background-color: rgb(255, 183, 15);
-    margin-left: 60px;
-    margin-top: 20px;
-    font-size: 28px;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    width: 200px;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    border-radius: 10px;
-    border-width: 2px;
-    border-style: solid;
-    border-color: rgb(255, 183, 15);
-}
-
-
 :root {
-
   --first-color: hsl(82, 60%, 28%);
   --title-color: hsl(0, 0%, 15%);
   --text-color: hsl(0, 0%, 35%);
   --container-color: hsl(0, 0%, 100%);
 
-
   --h2-font-size: 1.25rem;
-  --small-font-size: .813rem;
+  --small-font-size: 0.813rem;
 }
-
 
 @media screen and (min-width: 1120px) {
   :root {
     --h2-font-size: 1.5rem;
-    --small-font-size: .875rem;
+    --small-font-size: 0.875rem;
   }
 }
 
@@ -54,17 +33,110 @@ img {
   height: auto;
 }
 
-.container {
-  display: grid;
-  justify-items: start; 
-  padding-block: 1.25rem;
-  margin-top: 20px;
+.header-event-box {
+  color: rgb(255, 255, 255);
+  background-color: rgb(255, 183, 15);
   margin-left: 60px;
+  margin-top: 20px;
+  font-size: 28px;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  width: 200px;
+  height: 46px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border-radius: 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgb(255, 183, 15);
+}
+
+.header-eventcount-animals-box {
+  color: rgb(255, 255, 255);
+  background-color: rgb(255, 183, 15);
+  margin-left: 20px;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  font-size: 28px;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  width: 260px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border-radius: 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgb(255, 183, 15);
+  margin-right: auto;
+}
+
+.header-create-event-box {
+  color: rgb(255, 255, 255);
+  background-color: rgb(255, 183, 15);
+  margin-left: 20px;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  font-size: 14px;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  width: 150px;
+  height: 35px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border-radius: 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgb(255, 183, 15);
+}
+
+.header-event-box-create{
+  color: rgb(255, 255, 255);
+  background-color: rgb(255, 183, 15);
+  margin-bottom: 10px;
+  font-size: 28px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  width: 250px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border-radius: 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgb(255, 183, 15);
+}
+
+.header-event-box-edit{
+  color: rgb(255, 255, 255);
+  background-color: rgb(255, 183, 15);
+  margin-bottom: 10px;
+  font-size: 28px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  width: 250px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border-radius: 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgb(255, 183, 15);
+}
+
+.container {
+  padding: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1200px;
+  max-height: 70vh; /* Set a maximum height for the container */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding: 10px; /* Optional padding for aesthetics */
 }
 
 .card__container {
   display: grid;
-  row-gap: 3.5rem;
+  grid-template-columns: repeat(4, 1fr); 
+  column-gap: 1.5rem;
+  row-gap: 2rem;
+  justify-items: center;
 }
 
 .card__article {
@@ -73,33 +145,32 @@ img {
 }
 
 .card__data {
-    width: 220px; 
-    height: auto; 
-    background-color: var(--container-color); 
-    box-shadow: 0 8px 24px hsla(0, 0%, 0%, .15); 
-    border-radius: 1rem; 
-    padding: 1rem; /* เพิ่มพื้นที่ภายใน */
-    position: absolute; /* ตำแหน่งแบบ absolute */
-    bottom: -9rem; /* ระยะจากด้านล่าง */
-    left: 0;
-    right: 0;
-    margin-inline: auto; /* กึ่งกลาง */
-    opacity: 0;
-    transition: opacity 1s 1s;
-  }
-  
+  width: 220px;
+  height: auto;
+  background-color: var(--container-color);
+  box-shadow: 0 8px 24px hsla(0, 0%, 0%, 0.15);
+  border-radius: 1rem;
+  padding: 1rem;
+  position: absolute;
+  bottom: -9rem;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  opacity: 0;
+  transition: opacity 1s 1s;
+}
 
 .card__description {
   display: block;
   font-size: 13px;
-  margin-bottom: .25rem;
+  margin-bottom: 0.25rem;
 }
 
 .card__title {
   font-size: 14px;
   font-weight: 500;
   color: var(--title-color);
-  margin-bottom: .75rem;
+  margin-bottom: 0.75rem;
 }
 
 .card__button_Edit {
@@ -134,11 +205,10 @@ img {
   text-decoration: underline;
 }
 
-/* Naming animations in hover */
 .card__article:hover .card__data {
   animation: show-data 1s forwards;
   opacity: 1;
-  transition: opacity .3s;
+  transition: opacity 0.3s;
 }
 
 .card__article:hover {
@@ -153,7 +223,6 @@ img {
   animation: remove-data 1s forwards;
 }
 
-/* Card animation */
 @keyframes show-data {
   50% {
     transform: translateY(-10rem);
@@ -177,7 +246,7 @@ img {
     transform: translateY(-10rem);
   }
   100% {
-    transform: translateY(.5rem);
+    transform: translateY(0.5rem);
   }
 }
 
@@ -191,30 +260,20 @@ img {
   }
 }
 
-
-/* For medium devices */
-@media screen and (min-width: 768px) {
-  .card__container {
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 1.5rem;
-  }
-}
-
-/* For large devices */
-@media screen and (min-width: 1920px) {
-  .container {
-    height: 0;
-  }
-
+@media screen and (max-width: 1200px) {
   .card__container {
     grid-template-columns: repeat(3, 1fr);
   }
-  .card__img {
-    width: 508px;
-  }
-  .card__data { 
-    width: 240px;
-    padding-inline: 1.5rem;
+}
+
+@media screen and (max-width: 768px) {
+  .card__container {
+    grid-template-columns: repeat(2, 1fr); 
   }
 }
 
+@media screen and (max-width: 480px) {
+  .card__container {
+    grid-template-columns: 1fr; 
+  }
+}

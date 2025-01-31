@@ -3,7 +3,7 @@ import { ReviewInterface } from "../../interface/IReview";
 import UserDefaultProfile from "../../assets/Profile-user.jpg";
 import { ListReview, GetUserByIdReview } from "../../services/https";
 import { FaStar } from "react-icons/fa";
-import Modal from "./Model/model"
+import ModalReview from "./Model/model"
 import { Card,Button } from "antd";
 import "./review.css";
 
@@ -26,7 +26,7 @@ const handleCancel = () => {setIsModalVisible(false);};
       setLoading(true); 
       const res = await ListReview();
       if (res) {
-        setFilteredReviews(res.slice(0, 6)); // Get first 6 reviews
+        setFilteredReviews(res.slice(0, 6)); 
 
         const userPromises = res.map(async (review) => {
           if (review.UserID) {
@@ -39,6 +39,7 @@ const handleCancel = () => {setIsModalVisible(false);};
         });
 
         const userInfos = await Promise.all(userPromises);
+        console.log(userNames)
         setUserNames(userInfos.map((info) => info.name));
         setUserProfiles(userInfos.map((info) => info.profile));
       }
@@ -52,6 +53,7 @@ const handleCancel = () => {setIsModalVisible(false);};
 
   const getUserNameAndProfileById = async (id: number) => {
     const user = await GetUserByIdReview(id);
+    console.log(user)
     if (user) {
       return {
         fullName: `${user.FirstName ?? ""} ${user.LastName ?? ""}`,
@@ -96,6 +98,14 @@ const handleCancel = () => {setIsModalVisible(false);};
     getReviews();
   }, []);
 
+  if (filteredReviews === null || filteredReviews.length === 0) {
+    return (
+      <div className="cards">
+        <h1>No Data Available</h1> 
+      </div>
+    );
+  }
+
   return (
     <div>
       <header>
@@ -117,7 +127,7 @@ const handleCancel = () => {setIsModalVisible(false);};
                   <Card key={review.ID} className="review-card">
                     <div className="review-container">
                       <img
-                        src={userProfiles[index] || UserDefaultProfile} 
+                        src={`http://localhost:8000/${userProfiles[index]}` || UserDefaultProfile} 
                         className="review-profile-img"
                         alt="User Profile"
                       />
@@ -151,7 +161,8 @@ const handleCancel = () => {setIsModalVisible(false);};
           <Button type="link" style={{  display: 'block',textAlign: 'center',color: '#002A48',margin: '10px 0',}} onClick={showModal}>Read More Visitor Reviews</Button>
         </center>
       </footer>
-      <Modal isVisible={isModalVisible} handleCancel={handleCancel} />
+      <ModalReview isVisible={isModalVisible} handleCancel={handleCancel} />
+      <br />
     </div>
   );
 };

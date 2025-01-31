@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Pencil } from "lucide-react";
 import {
   Form,
   Input,
@@ -10,7 +11,6 @@ import {
   Col,
   Space,
   Card,
-  Divider,
   DatePicker,
   Select,
 } from "antd";
@@ -21,18 +21,20 @@ import {
   GetSexs,
   GetBehaviorals,
   GetBiological,
-  ListHabitat,
+  ListHabitatAvalibleforAnimal,
   GetAnimalById,
   UpdateAnimal,
-} from "../../../../services/https"; 
+  GetStatusAnimal,
+} from "../../../../services/https";
 import { SexsInterface } from "../../../../interface/ISex";
 import { BehavioralInterface } from "../../../../interface/IBehavioral";
 import { BiologicalInterface } from "../../../../interface/IBiological";
 import { HabitatInterface } from "../../../../interface/IHabitat";
 import { AnimalsInterface } from "../../../../interface/IAnimal";
-import { useNavigate, useParams } from "react-router-dom";
+import { HealthAnimalInterface } from "../../../../interface/IStatusAnimal";
+import { useNavigate, useParams, Link } from "react-router-dom";
 
-const CreateAnimalForm: React.FC = () => {
+const UpdateAnimalForm: React.FC = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
   const [sexs, setSexs] = useState<SexsInterface[]>([]);
@@ -40,36 +42,65 @@ const CreateAnimalForm: React.FC = () => {
   const [behaviorals, setBehaviorals] = useState<BehavioralInterface[]>([]);
   const [biologicals, setBiologicals] = useState<BiologicalInterface[]>([]);
   const [habitats, setHabitats] = useState<HabitatInterface[]>([]);
+  const [statusanimal, setStatusAnimal] = useState<HealthAnimalInterface[]>([]);
+  const [employeeid, setEmployeeid] = useState<number>(
+    Number(localStorage.getItem("employeeid")) || 0
+  );
   const navigate = useNavigate();
   const { Option } = Select;
   let { id } = useParams();
   const [messageApi, contextHolder] = message.useMessage();
 
   const onFinish = async (values: any) => {
-    values.ID = animals?.ID; 
-  
+    values.ID = animals?.ID;
+    values.EmployeeID = employeeid;
+    if (values.BirthDay) {
+      values.BirthDay = dayjs(values.BirthDay).format("YYYY-MM-DD");
+    }
+    console.log("Values to be submitted:", values);
+
+    if (values.weight < 0.01 || values.weight > 9999.99) {
+      message.error("น้ำหนักต้องอยู่ในช่วง 0.01 - 9999.99 kg.");
+      return;
+    }
+
+    if (values.height < 0.01 || values.height > 9999.99) {
+      message.error("ส่วนสูงต้องอยู่ในช่วง 0.01 - 9999.99 cm.");
+      return;
+    }
+
     const file = fileList.length > 0 ? fileList[0].originFileObj : null;
-  
-    console.log('Values to be submitted:', values);
-  
-    let res = await UpdateAnimal(values, file); 
-  
+
+    const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+
+    if (file && !validImageTypes.includes(file.type)) {
+      message.error("ไม่สามารถสร้างข้อมูลได้ กรุณาอัพโหลดเฉพาะไฟล์รูปภาพ");
+      return;
+    }
+
+    console.log("Values to be submitted:", values);
+
+    let res = await UpdateAnimal(values, file);
+
     if (res) {
       messageApi.open({
         type: "success",
-        content: res.message,
+        content: "เเก้ไขข้อมูลสัตว์สำเร็จ",
       });
       setTimeout(() => {
-        navigate("/");
+        navigate("/zookeeper");
       }, 2000);
     } else {
       messageApi.open({
         type: "error",
-        content: "Failed to update animal data",
+        content: "เเก้ไขข้อมูลสัตว์ไม่สำเร็จ",
       });
     }
   };
-  
+
+  const onFinishFailed = () => {
+    message.warning("กรุณากรอกข้อมูลสัตว์ให้ถูกต้องเเละครบถ้วน");
+  };
 
   const onChange = ({ fileList: newFileList }: any) => {
     setFileList(newFileList);
@@ -110,16 +141,25 @@ const CreateAnimalForm: React.FC = () => {
   };
 
   const getHabitat = async () => {
-    let res = await ListHabitat();
+    let res = await ListHabitatAvalibleforAnimal();
     if (res) {
       setHabitats(res);
     }
   };
 
-  const getAnimalById = async () => {
-    let res = await GetAnimalById(Number(id)); // ใช้ ID จาก params
+  const getStatusAnimal = async () => {
+    let res = await GetStatusAnimal();
+    console.log(res);
     if (res) {
-      setAnimals(res); // เซ็ตข้อมูลของสัตว์
+      setStatusAnimal(res);
+    }
+  };
+
+  const getAnimalById = async () => {
+    let res = await GetAnimalById(Number(id));
+    console.log(res)
+    if (res) {
+      setAnimals(res);
       form.setFieldsValue({
         Name: res.Name,
         Weight: res.Weight,
@@ -127,21 +167,20 @@ const CreateAnimalForm: React.FC = () => {
         Description: res.Description,
         Birthplace: res.Birthplace,
         BirthDay: dayjs(res.BirthDay),
-        Health: res.Health,
+        Health: res.HealthAnimal?.ID,
         Note: res.Note,
         SexID: res.Sex?.ID,
         BiologicalID: res.Biological?.ID,
         BehavioralID: res.Behavioral?.ID,
         HabitatID: res.Habitat?.ID,
       });
-      // If there is a picture URL, initialize fileList
       if (res.Picture) {
         setFileList([
           {
-            uid: '-1',
+            uid: "-1",
             name: res.Picture,
-            status: 'done',
-            url: `http://localhost:8000/${res.Picture}`, // URL of the existing picture
+            status: "done",
+            url: `http://localhost:8000/${res.Picture}`,
           },
         ]);
       }
@@ -149,32 +188,38 @@ const CreateAnimalForm: React.FC = () => {
   };
 
   useEffect(() => {
+    setEmployeeid(Number(localStorage.getItem("employeeid")));
     getSex();
     getBiological();
     getBehavioral();
     getHabitat();
     getAnimalById();
+    getStatusAnimal();
   }, []);
 
   return (
     <Card>
-       {contextHolder}
-      <h2>Create Animal</h2>
-      <Divider />
-      <Form form={form} layout="vertical" onFinish={onFinish}>
+      {contextHolder}
+      <h2 className="header-animals-box-edit">EDIT ANIMAL</h2>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+      >
         <Row gutter={[16, 0]}>
           <Form.Item
-            label="Upload Picture"
+            label="อัปโหลดรูปภาพ"
             name="picture"
             valuePropName="fileList"
             rules={[
               {
                 required: true,
-                message: "Please upload a picture",
+                message: "กรุณาอัพโหลดรูป",
                 validator: () => {
                   return fileList.length > 0
                     ? Promise.resolve()
-                    : Promise.reject(new Error("Please upload a picture"));
+                    : Promise.reject(new Error("กรุณาอัพโหลดรูป"));
                 },
               },
             ]}
@@ -185,10 +230,24 @@ const CreateAnimalForm: React.FC = () => {
                 onChange={onChange}
                 onPreview={onPreview}
                 beforeUpload={(file) => {
+                  const isImage = file.type.startsWith("image/");
+                  const isLt2M = file.size / 1024 / 1024 < 2;
+
+                  if (!isImage) {
+                    message.error("กรุณาอัปโหลดไฟล์รูปภาพที่ถูกต้อง");
+                    return Upload.LIST_IGNORE;
+                  }
+
+                  if (!isLt2M) {
+                    message.error("ไฟล์รูปภาพต้องมีขนาดไม่เกิน 2MB");
+                    return Upload.LIST_IGNORE;
+                  }
+
                   setFileList([file]);
                   return false;
                 }}
                 maxCount={1}
+                multiple={false}
                 listType="picture-card"
               >
                 {fileList.length < 1 && (
@@ -203,17 +262,29 @@ const CreateAnimalForm: React.FC = () => {
 
           <Col xs={24} sm={8} md={8} lg={8}>
             <Form.Item
-              label="Name"
+              label="ชื่อสัตว์ที่นำเข้า"
               name="Name"
               style={{ width: "460px" }}
               rules={[
-                { required: true, message: "Please enter the animal's name" },
+                { required: true, message: "กรุณากรอกชื่อสัตว์ที่นำเข้า" },
+                {
+                  max: 99,
+                  message: "กรุณากรอกชื่อสัตว์ไม่เกิน 100 ตัวอักษร",
+                },
               ]}
             >
-              <Input placeholder="Enter animal name" />
+              <Input
+                placeholder="Enter animal name"
+                maxLength={100}
+                onKeyPress={(event) => {
+                  if (!/^[a-zA-Z ]$/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+              />
             </Form.Item>
 
-            <Row gutter={[16, 16]}>
+            <Row gutter={[16, 0]}>
               <Col
                 xs={24}
                 sm={12}
@@ -222,66 +293,98 @@ const CreateAnimalForm: React.FC = () => {
                 style={{ marginRight: "118px" }}
               >
                 <Form.Item
-                  label="Weight"
+                  label="น้ำหนักของสัตว์"
                   name="Weight"
                   rules={[
                     {
                       required: true,
-                      message: "Please enter the animal's weight",
+                      message: "กรุณากรอกน้ำหนักของสัตว์",
+                    },
+                    {
+                      validator: (_, value) => {
+                        if (value === undefined || value <= 9999.99) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          new Error("กรุณาใส่ค่าส่วนสูงไม่เกิน 9999.99 cm.")
+                        );
+                      },
                     },
                   ]}
                 >
                   <InputNumber
                     style={{ width: "210px" }}
                     placeholder="Enter animal weight"
+                    min={0.01}
+                    step={0.01}
+                    defaultValue={0.01}
+                    precision={2}
+                    onKeyPress={(event) => {
+                      if (!/^[0-9.]$/.test(event.key)) {
+                        event.preventDefault();
+                      }
+                    }}
                   />
                 </Form.Item>
               </Col>
 
               <Col xs={24} sm={12} md={8} lg={8}>
                 <Form.Item
-                  label="Height"
+                  label="ส่วนสูงของสัตว์"
                   name="Height"
                   rules={[
                     {
                       required: true,
-                      message: "Please enter the animal's height",
+                      message: "กรุณากรอกส่วนสูงของสัตว์",
+                    },
+                    {
+                      validator: (_, value) => {
+                        if (value === undefined || value <= 9999.99) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          new Error("กรุณาใส่ค่าส่วนสูงไม่เกิน 9999.99 cm.")
+                        );
+                      },
                     },
                   ]}
                 >
                   <InputNumber
                     style={{ width: "210px" }}
                     placeholder="Enter animal height"
+                    min={1.0}
+                    step={0.01}
+                    defaultValue={1.0}
+                    precision={2}
+                    onKeyPress={(event) => {
+                      if (!/^[0-9.]$/.test(event.key)) {
+                        event.preventDefault();
+                      }
+                    }}
                   />
                 </Form.Item>
               </Col>
             </Row>
           </Col>
 
-          {/* Block 3: Description */}
           <Col xs={24} sm={8} md={8} lg={8}>
             <Form.Item
-              label="Description"
+              label="รายระเอียด"
               name="Description"
               style={{ marginLeft: "80px", width: "580px" }}
-              rules={[
-                { required: true, message: "Please enter the description" },
-              ]}
+              rules={[{ required: true, message: "กรุณากรอกกรอกรายระเอียด" }]}
             >
               <Input.TextArea rows={5} placeholder="Enter animal description" />
             </Form.Item>
           </Col>
         </Row>
 
-        {/* Other fields */}
-        <Row gutter={[16, 10]}>
+        <Row gutter={[16, 0]}>
           <Col xs={24} sm={12} md={12} lg={12}>
             <Form.Item
-              label="Birth Date"
+              label="วันเกิดของสัตว์"
               name="BirthDay"
-              rules={[
-                { required: true, message: "Please select the birth date" },
-              ]}
+              rules={[{ required: true, message: "กรุณาเลือกวันเกิดของสัตว์" }]}
             >
               <DatePicker style={{ width: "100%" }} />
             </Form.Item>
@@ -289,10 +392,10 @@ const CreateAnimalForm: React.FC = () => {
 
           <Col xs={24} sm={12} md={12} lg={12}>
             <Form.Item
-              label="Birthplace"
+              label="ถิ่นกำเนิดของสัตว์"
               name="Birthplace"
               rules={[
-                { required: true, message: "Please enter the birthplace" },
+                { required: true, message: "กรุณากรอกถิ่นกำเนิดของสัตว์" },
               ]}
             >
               <Input placeholder="Enter animal birthplace" />
@@ -301,21 +404,32 @@ const CreateAnimalForm: React.FC = () => {
 
           <Col xs={24} sm={12} md={12} lg={12}>
             <Form.Item
-              label="Health Status"
+              label="สุขภาพของสัตว์"
               name="Health"
               rules={[
-                { required: true, message: "Please enter the health status" },
+                { required: true, message: "กรุณาเลือกสถานะสุขภาพของสัตว์" },
               ]}
             >
-              <Input placeholder="Enter health status" />
+              <Select allowClear>
+                {statusanimal.map((item) => (
+                  <Option key={item.ID} value={item.ID}>
+                    {item.Status}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12} md={12} lg={12}>
             <Form.Item
-              label="Note"
+              label="หมายเหตุ"
               name="Note"
-              rules={[{ required: true, message: "Please enter a note" }]}
+              rules={[
+                {
+                  required: true,
+                  message: "กรุณากรอกหมายเหตุที่เเก้ไขข้อมูลสัตว์",
+                },
+              ]}
             >
               <Input placeholder="Enter any additional notes" />
             </Form.Item>
@@ -323,9 +437,9 @@ const CreateAnimalForm: React.FC = () => {
 
           <Col xs={24} sm={12} md={12} lg={12}>
             <Form.Item
-              label="Sex ID"
+              label="เพศของสัตว์"
               name="SexID"
-              rules={[{ required: true, message: "Please select the sex ID" }]}
+              rules={[{ required: true, message: "กรุณาเลือกเพศของสัตว์" }]}
             >
               <Select allowClear>
                 {sexs.map((item) => (
@@ -339,10 +453,13 @@ const CreateAnimalForm: React.FC = () => {
 
           <Col xs={24} sm={12} md={12} lg={12}>
             <Form.Item
-              label="Biological ID"
+              label="ข้อมูลเชิงชีวิภาพ"
               name="BiologicalID"
               rules={[
-                { required: true, message: "Please select the biological ID" },
+                {
+                  required: true,
+                  message: "กรุณาเลือกข้อมูลเชิงชีวภาพของสัตว์",
+                },
               ]}
             >
               <Select allowClear>
@@ -357,10 +474,10 @@ const CreateAnimalForm: React.FC = () => {
 
           <Col xs={24} sm={12} md={12} lg={12}>
             <Form.Item
-              label="Behavioral ID"
+              label="พฤติกรรมของสัตว์"
               name="BehavioralID"
               rules={[
-                { required: true, message: "Please select the behavioral ID" },
+                { required: true, message: "กรุณาเลือกพฤติกรรมของสัตว์" },
               ]}
             >
               <Select allowClear>
@@ -375,10 +492,10 @@ const CreateAnimalForm: React.FC = () => {
 
           <Col xs={24} sm={12} md={12} lg={12}>
             <Form.Item
-              label="Habitat ID"
+              label="ที่อยู่อาศัยของสัตว์"
               name="HabitatID"
               rules={[
-                { required: true, message: "Please select the habitat ID" },
+                { required: true, message: "กรุณาเลือกที่อยู่อาศัยของสัตว์" },
               ]}
             >
               <Select allowClear>
@@ -396,13 +513,16 @@ const CreateAnimalForm: React.FC = () => {
           <Col>
             <Form.Item>
               <Space>
-                <Button htmlType="button">Cancel</Button>
+                <Link to={"/zookeeper"}>
+                  <Button htmlType="button">Cancel</Button>
+                </Link>
                 <Button
                   type="primary"
                   htmlType="submit"
-                  icon={<PlusOutlined />}
+                  icon={<Pencil style={{ width: "18px" }} />}
+                  style={{ backgroundColor: "orange" }}
                 >
-                  Create
+                  SAVE
                 </Button>
               </Space>
             </Form.Item>
@@ -413,4 +533,4 @@ const CreateAnimalForm: React.FC = () => {
   );
 };
 
-export default CreateAnimalForm;
+export default UpdateAnimalForm;

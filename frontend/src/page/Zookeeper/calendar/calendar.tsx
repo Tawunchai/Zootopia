@@ -3,12 +3,11 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-import { Modal, Input, message } from "antd";
 import { Calendar as CalendarIcon } from "lucide-react";
 import {
   DateSelectArg,
   EventClickArg,
-  EventSourceInput, 
+  EventSourceInput,
 } from "@fullcalendar/core";
 import {
   getCalendars,
@@ -16,104 +15,106 @@ import {
   deleteCalendar,
 } from "../../../services/https";
 import { CalendarInterface } from "../../../interface/ICalendar";
-import { useNavigate } from "react-router-dom";
 import "./calendar.css";
+import { Form, Input, Modal, message } from "antd";
 
 const Calendar = () => {
-  const [currentEvents, setCurrentEvents] = useState<EventSourceInput>([]); 
+  const [form] = Form.useForm();
+  const [currentEvents, setCurrentEvents] = useState<EventSourceInput>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [modalTitle, setModalTitle] = useState("");
   const [selectedDate, setSelectedDate] = useState<any | null>(null);
-  const calendarRef = useRef<any>(null); 
-  const navigate = useNavigate();
+  const calendarRef = useRef<any>(null);
+  const [employeeid, setEmployeeid] = useState<number>(
+    Number(localStorage.getItem("employeeid")) || 0
+  );
 
   const fetchTasks = async () => {
     try {
-      const data = await getCalendars(); 
+      const data = await getCalendars();
       console.log("Fetched data: ", data);
-  
+
       if (data && Array.isArray(data)) {
-        const events: EventSourceInput = data.map((task: CalendarInterface) => { 
-          if (!task.Title || !task.StartDate) {
-            console.error("Missing title or startDate:", task);
-            return null; 
-          }
-  
-          const parsedDate = new Date(task.StartDate);
-          if (isNaN(parsedDate.getTime())) {
-            console.error("Invalid startDate:", task.StartDate);
-            return null; 
-          }
-  
-          
-          return {
-            id: task.ID ? String(task.ID) : "",     
-            title: task.Title,                       
-            start: parsedDate,                       
-            allDay: task.AllDay ?? true,             
-          };
-        }).filter((event) => event !== null); 
-  
+        const events: EventSourceInput = data
+          .map((task: CalendarInterface) => {
+            if (!task.Title || !task.CalendarDate) {
+              console.error("Missing title or startDate:", task);
+              return null;
+            }
+
+            const parsedDate = new Date(task.CalendarDate);
+            if (isNaN(parsedDate.getTime())) {
+              console.error("Invalid startDate:", task.CalendarDate);
+              return null;
+            }
+
+            return {
+              id: task.ID ? String(task.ID) : "",
+              title: task.Title,
+              start: parsedDate,
+              allDay: task.AllDay ?? true,
+            };
+          })
+          .filter((event) => event !== null);
+
         console.log("Processed events: ", events);
-  
-        setCurrentEvents(events); 
+
+        setCurrentEvents(events);
       }
     } catch (error) {
-      message.error("ไม่สามารถโหลดข้อมูลเหตุการณ์ได้");
+      message.warning("ไม่สามารถโหลดข้อมูลเหตุการณ์ได้");
       console.error("Error fetching calendars:", error);
     }
   };
-  
+
   useEffect(() => {
-    fetchTasks(); 
+    setEmployeeid(Number(localStorage.getItem("employeeid")));
+    fetchTasks();
   }, []);
 
-  const handleCreateTask = async () => {
-    if (!modalTitle.trim() || !selectedDate) {
-      message.warning("กรุณาระบุชื่อเหตุการณ์ให้ถูกต้อง");
+  const handleCreateTask = async (values: { modalTitle: string }) => {
+    if (!selectedDate) {
+      message.warning("กรุณาเลือกวันที่");
       return;
     }
-  
-    // ตั้งเวลาให้เป็นเวลา 00:00:00 ของวันที่เลือก (ในเขตเวลา Asia/Bangkok)
-    const startDate = new Date(selectedDate.startStr); 
-    startDate.setHours(0, 0, 0, 0);  // ตั้งเวลาให้เป็น 00:00:00
-  
-    // แปลงเวลาเป็นรูปแบบ ISO string (โดยคำนึงถึงเขตเวลาของผู้ใช้)
-    const isoDate = startDate.toISOString(); 
-  
+
+    if (values.modalTitle.length > 100) {
+      message.error("ไม่สามารถสร้างข้อมูลได้ กรุณากรอกข้อมูลให้ถูกต้อง");
+      return;
+    }
+
+    const startDate = new Date(selectedDate.startStr);
+    startDate.setHours(0, 0, 0, 0);
+
+    const isoDate = startDate.toISOString();
+
     const newCalendar: Omit<CalendarInterface, "ID"> & { ID: number } = {
-      Title: modalTitle,
-      StartDate: isoDate, // ใช้ ISO string เพื่อส่งไปยัง backend
+      Title: values.modalTitle,
+      CalendarDate: isoDate,
       AllDay: true,
-      EmployeeID: 1, 
-      ID: 0,        
+      EmployeeID: employeeid,
+      ID: 0,
     };
-  
+
     console.log("Creating Calendar Event with Payload:", newCalendar);
-  
+
     try {
-      await createCalendar(newCalendar); 
+      await createCalendar(newCalendar);
       setIsModalVisible(false);
+      form.resetFields(); 
       message.success("สร้างเหตุการณ์สำเร็จ!");
-  
-      fetchTasks(); 
-      navigate("/calendar"); 
+      fetchTasks();
     } catch (error) {
       message.error("ไม่สามารถสร้างเหตุการณ์ได้");
     }
   };
-  
-  
-  
-  
 
   const handleEventClick = (selected: EventClickArg) => {
     Modal.confirm({
       title: `คุณแน่ใจหรือไม่ที่จะลบ "${selected.event.title}"?`,
       onOk: async () => {
         try {
-          await deleteCalendar(Number(selected.event.id)); 
-          selected.event.remove(); 
+          await deleteCalendar(Number(selected.event.id));
+          selected.event.remove();
           message.success("ลบเหตุการณ์สำเร็จ");
         } catch {
           message.error("ไม่สามารถลบเหตุการณ์ได้");
@@ -122,43 +123,78 @@ const Calendar = () => {
     });
   };
 
+  const onFinishFailed = () => {
+    message.warning("กรุณากรอกข้อมูลให้ถูกต้อง");
+  };
+
   return (
-    <div>
-      <h1 className="header-calendar-box">
-        <CalendarIcon size={28} style={{marginRight:"10px"}} />
-        Calendar
-      </h1>
-      <div className="full-calendar-wrapper">
-        <FullCalendar
-          ref={calendarRef}
-          plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
-          headerToolbar={{
-            left: "prev,next today",
-            center: "title",
-            right: "dayGridMonth,listMonth",
-          }}
-          initialView="dayGridMonth"
-          editable={true}
-          selectable={true}
-          events={currentEvents} 
-          select={(e: DateSelectArg) => {
-            setSelectedDate(e);
-            setIsModalVisible(true); 
-          }}
-          eventClick={handleEventClick} 
-        />
-      </div>
+    <div style={{ margin: 0, padding: "20px", minHeight: "100vh" }}>
+      {Array.isArray(currentEvents) && currentEvents.length === 0 ? (
+        <div className="no-data-container">
+          <p className="text-white text-xl">No events available.</p>
+        </div>
+      ) : (
+        <div className="full-calendar-wrapper">
+          <h1 className="header-calendar-box">
+            <CalendarIcon size={28} style={{ marginRight: "10px" }} />
+            Calendar
+          </h1>
+          <FullCalendar
+            ref={calendarRef}
+            plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
+            headerToolbar={{
+              left: "prev,next today",
+              center: "title",
+              right: "dayGridMonth,listMonth",
+            }}
+            initialView="dayGridMonth"
+            editable={true}
+            selectable={true}
+            events={currentEvents}
+            select={(e: DateSelectArg) => {
+              setSelectedDate(e);
+              setIsModalVisible(true);
+            }}
+            eventClick={handleEventClick}
+          />
+        </div>
+      )}
       <Modal
         title="สร้างเหตุการณ์ใหม่"
         visible={isModalVisible}
-        onOk={handleCreateTask}
-        onCancel={() => setIsModalVisible(false)}
+        onOk={() => {
+          form
+            .validateFields()
+            .then((values) => {
+              handleCreateTask(values);
+            })
+            .catch((info) => {
+              console.error("Validation Failed:", info);
+              onFinishFailed();
+            });
+        }}
+        onCancel={() => {
+          setIsModalVisible(false);
+          form.resetFields();
+        }}
       >
-        <Input
-          value={modalTitle}
-          onChange={(e) => setModalTitle(e.target.value)} 
-          placeholder="ชื่อเหตุการณ์"
-        />
+        <Form
+          form={form}
+          layout="vertical"
+          onFinishFailed={onFinishFailed}
+          initialValues={{ modalTitle: "" }}
+        >
+          <Form.Item
+            name="modalTitle"
+            label="ชื่อเหตุการณ์"
+            rules={[
+              { required: true, message: "กรุณากรอกชื่อเหตุการณ์" },
+              { max: 100, message: "ข้อความต้องไม่เกิน 100 ตัวอักษร" },
+            ]}
+          >
+            <Input placeholder="ชื่อเหตุการณ์" />
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   );

@@ -8,27 +8,29 @@ import (
 
 type User struct {
 	gorm.Model
-	Username  string	
-	Password  string	
-	Email     string	
-	FirstName string    
-   	LastName  string    
-	Birthday  time.Time	
-	Profile   string 	`gorm:"type:longtext"` // edit
+	Username string `valid:"required~Username is required" gorm:"not null"`
+    Password   string `valid:"required~Password is required"`
+    Email 	string `valid:"required~Email is required,email~Email format is invalid"`
+    FirstName  string `valid:"required~FirstName is required"`
+    LastName   string `valid:"required~LastName is required"`    
+	Birthday  time.Time 
+	Profile   string    `gorm:"type:longtext"` 
+	PhoneNumber string `valid:"required~PhoneNumber is required,stringlength(10|10)~Phone must be 10 digits"`
+		
 
-	// UserRoleID ทำหน้าที่เป็น FK
-	UserRoleID uint 
+	UserRoleID uint
 	UserRole   *UserRoles `gorm:"foreignKey: UserRoleID" `
 
-	// GenderID ทำหน้าที่เป็น FK
-	GenderID  uint    
-   	Gender    *Genders  `gorm:"foreignKey: GenderID"`
+	GenderID uint
+	Gender   *Genders `gorm:"foreignKey: GenderID"`
 
-	// 1 user สามารถมีได้ 1 TutorProfile 
-	Employee  *Employee  `gorm:"foreignKey:UserID"`
+	Employee *Employee `gorm:"foreignKey:UserID"`
 
-	// 1 user สามารถมีหลาย review
+	Booking *Booking `gorm:"foreignKey:UserID"`
+
 	Review []Review `gorm:"foreignKey:UserID"`
 
 	Like []Like `gorm:"foreignKey:UserID"`
+
 }
+//เลื่อนtask#2

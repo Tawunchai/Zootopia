@@ -1,8 +1,8 @@
-/* Calendar Header */
+
 .header-calendar-box {
-    color: rgb(255, 255, 255); /* Text color */
+    color: rgb(255, 255, 255); 
     background-color: rgb(255, 183, 15);
-    margin-left: 20px;
+    margin-left: 10px;
     margin-top: 20px;
     font-size: 28px;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
@@ -16,30 +16,31 @@
     border-color: rgb(255, 183, 15);
 }
 
-/* Full Calendar Wrapper */
 .full-calendar-wrapper {
-    height: calc(99vh - 60px); /* Adjust height to fill available space */
-    padding: 20px; /* Optional padding for styling */
-    color: rgb(88, 88, 88); /* Text color for calendar wrapper */
+    height: calc(99vh - 60px); 
+    padding: 20px; 
+    color: rgb(88, 88, 88); 
 }
 
-/* Full Calendar Events */
 .fc {
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    color: rgba(195, 118, 3, 0.696); /* Text color for events */
+    width: 100%;
+    height: 100%;
+    color: rgba(195, 118, 3, 0.696); 
 }
 
-/* Event Titles */
 .fc-event {
-    color: white; /* Event title text color */
-    background-color: #2d435a; /* Event background color */
+    color: white; 
+    background-color: #f0b54e;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    border-style: solid;
+    border-color: #f0b54e;
 }
 
-/* Example: Customize Event Color */
 .fc-event:hover {
-    background-color: #0056b3; /* Darker background on hover */
-    color: #ffffff; /* Maintain white text on hover */
+    background-color: #89b300; 
+    color: #bd7a7a; 
+    border-style: solid;
+    border-color: #89b300;
 }
 
 .fc-toolbar {
@@ -49,7 +50,7 @@
   }
   
   .fc-toolbar .fc-button {
-    background-color: #dfa14f; /* สีปุ่ม */
+    background-color: #dfa14f; 
     color: white;
     border: none;
     border-radius: 4px;
@@ -57,12 +58,18 @@
   }
   
   .fc-toolbar .fc-button:hover {
-    background-color: #ee7117; /* สีปุ่มเมื่อ hover */
+    background-color: #ee7117; 
   }
   
   .fc-toolbar-title {
-    color: #dfa14f; /* สีข้อความ title */
+    color: #c7934e;
     font-weight: bold;
     font-size: 1.2rem;
   }
-  
+
+  button.fc-today-button {
+    background-color: #ffaa0e !important; 
+    font-weight: bold !important;
+    color: white !important;
+    border: none !important;
+  }

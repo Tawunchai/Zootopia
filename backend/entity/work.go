@@ -8,13 +8,13 @@ import (
 
 type Work struct {
 	gorm.Model
-	Feed  bool 
-	Cleaning  bool 
-	FinishDate     time.Time 
+	Feed       bool      
+	Cleaning   bool      
+	FinishDate time.Time `valid:"required~Finish Date is required"`
 
-	EmployeeID uint
-	Employee   Employee `gorm:"foreignKey:EmployeeID"`
+	EmployeeID uint     `valid:"required~EmployeeID is required"`
+	Employee   Employee `gorm:"foreignKey:EmployeeID" valid:"-"` 
 
-	HabitatID uint
-	Habitat   Habitat `gorm:"foreignKey:HabitatID"`
+	HabitatID uint     `valid:"required~HabitatID is required"`
+	Habitat   Habitat  `gorm:"foreignKey:HabitatID" valid:"-"` 
 }
